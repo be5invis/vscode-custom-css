@@ -21,7 +21,7 @@ As you know to access the command palette and introduce commands you can use ***
 
 ##Windows users
 
-**In Windows, make sure you run your VS Code in Administrator mode before enabling or disabling the icons!**
+**In Windows, make sure you run your VS Code in Administrator mode before enabling or disabling your custom style!**
 
 ## Linux users
 **Linux also requires you to reclaim ownership of the vs code folders** 
