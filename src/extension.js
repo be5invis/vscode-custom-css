@@ -158,23 +158,34 @@ function activate(context) {
 
 	function fUninstall(willReinstall) {
 		fs.stat(cssfilebak, function (errBak, statsBak) {
-			if (errBak) { return; }
+			if (errBak) {
+				if (willReinstall) {
+					emitEndUninstall();
+				}
+				return;
+			}
 			fs.stat(cssfile, function (errOr, statsOr) {
 				if (errOr) {
 					vscode.window.showInformationMessage(msg.smthingwrong + errOr);
 				} else {
-					// restoring bak files
 					restoreBak(willReinstall);
 				}
 			});
 		});
 	}
 
+	function fUpdate() {
+		eventEmitter.once('endUninstall', fInstall);
+		fUninstall(true);
+	}
+
 	var installCustomCSS = vscode.commands.registerCommand('extension.installCustomCSS', fInstall);
 	var uninstallCustomCSS = vscode.commands.registerCommand('extension.uninstallCustomCSS', fUninstall);
+	var updateCustomCSS = vscode.commands.registerCommand('extension.updateCustomCSS', fUpdate);
 
 	context.subscriptions.push(installCustomCSS);
 	context.subscriptions.push(uninstallCustomCSS);
+	context.subscriptions.push(updateCustomCSS);
 }
 exports.activate = activate;
 
