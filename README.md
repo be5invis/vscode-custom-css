@@ -2,7 +2,7 @@
 
 Custom CSS to your VS Code. Based on [robertohuertasm](https://github.com/robertohuertasm)’s [vscode-icons](https://github.com/robertohuertasm/vscode-icons).
 
-<img src="https://raw.githubusercontent.com/robertohuertasm/vscode-icons/master/screenshot.png" >
+![screenshot](https://raw.githubusercontent.com/be5invis/vscode-custom-css/master/screenshot.png)(Yes, it can co-exist with [vscode-icons](https://github.com/robertohuertasm/vscode-icons).)
 
 ## Installation
 
@@ -36,8 +36,6 @@ ls -la /usr/share/code
 #if you want to rollback this permissions back to root:
 sudo chown -R root /usr/share/code
 ```
-If you're using any other Linux flavour please [take a look at this Github's issue](https://github.com/robertohuertasm/vscode-icons/issues/6).
-
 
 # Disclaimer
 This extension modifies some VS Code files so use it at your own risk.
