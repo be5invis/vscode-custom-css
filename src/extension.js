@@ -37,28 +37,42 @@ function activate(context) {
 			return;
 		};
 		var filePath = config.file;
-		if (!filePath) {
-			vscode.window.showInformationMessage(msg.notconfigured);
-			console.log(msg.notconfigured);
-			return;
-		};
-		fs.stat(filePath, function (err, result) {
-			if (err) {
-				vscode.window.showInformationMessage(msg.notfound);
-				fUninstall();
-				return;
-			}
+		var importUrl = config.import;
+		if (filePath) {
+			fs.stat(filePath, function (err, result) {
+				if (err) {
+					vscode.window.showInformationMessage(msg.notfound);
+					fUninstall();
+					return;
+				}
+				try {
+					var css = fs.readFileSync(cssfile, 'utf-8');
+					css += '\n\n/* !!! VSCODE-CUSTOM-CSS-REPLACEMENTS BEGIN !!! */\n';
+					css += fs.readFileSync(filePath, 'utf-8');
+					css += '\n\n/* !!! VSCODE-CUSTOM-CSS-REPLACEMENTS END !!! */\n';
+					fs.writeFileSync(cssfile, css, 'utf-8');
+					enabledRestart();
+				} catch (err) {
+					if (err) { console.log(err); }
+				}
+			});
+		} else if (importUrl) {
 			try {
 				var css = fs.readFileSync(cssfile, 'utf-8');
-				css += '\n\n/* !!! VSCODE-CUSTOM-CSS-REPLACEMENTS BEGIN !!! */\n';
-				css += fs.readFileSync(filePath, 'utf-8');
-				css += '\n\n/* !!! VSCODE-CUSTOM-CSS-REPLACEMENTS END !!! */\n';
-				fs.writeFileSync(cssfile, css, 'utf-8');
+				var delta = '\n\n/* !!! VSCODE-CUSTOM-CSS-REPLACEMENTS BEGIN !!! */\n';
+				delta += '@import url(' + importUrl + ');'
+				delta += '\n\n/* !!! VSCODE-CUSTOM-CSS-REPLACEMENTS END !!! */\n';
+				fs.writeFileSync(cssfile, delta + css, 'utf-8');
 				enabledRestart();
 			} catch (err) {
 				if (err) { console.log(err); }
 			}
-		});
+		} else {
+			vscode.window.showInformationMessage(msg.notconfigured);
+			console.log(msg.notconfigured);
+			return;
+		}
+
 	}
 
 	function timeDiff(d1, d2) {
