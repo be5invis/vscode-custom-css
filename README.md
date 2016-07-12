@@ -15,7 +15,9 @@ ext install vscode-custom-css
 
 As you know to access the command palette and introduce commands you can use ***F1*** (all OS), ***Ctrl+Shift+P*** (Windows & Linux) or ***Cmd+Shift+P*** (OS X).
 
-- ***Enable Custom CSS*** : It enables custom CSS configured in “`vscode_custom_css.file`” option.
+- ***Enable Custom CSS*** : It enables custom CSS from:
+  - File path configured in “`vscode_custom_css.file`” option.
+  - Web or local URL configured in “`vscode_custom_css.import`” option. This importing mechanism uses `@import` and the CSS is placed before the original one, so use `!import` often to elevate its priority.
 
 - ***Disable Custom CSS***: It will disable custom CSS.
 
