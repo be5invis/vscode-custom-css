@@ -1,4 +1,6 @@
-# Custom CSS
+# Custom CSS and JS
+
+**IMPORTANT NOTE**: Custom CSS and JS 2.0 is NOT compatible with Custom CSS 1.x. In case of file corruption, reinstalling VS Code will revert all customized CSS and JS injections to the default.
 
 Custom CSS to your VS Code. Based on [robertohuertasm](https://github.com/robertohuertasm)’s [vscode-icons](https://github.com/robertohuertasm/vscode-icons).
 
@@ -15,11 +17,9 @@ ext install vscode-custom-css
 
 As you know to access the command palette and introduce commands you can use ***F1*** (all OS), ***Ctrl+Shift+P*** (Windows & Linux) or ***Cmd+Shift+P*** (OS X).
 
-- ***Enable Custom CSS*** : It enables custom CSS from:
-  - File path configured in “`vscode_custom_css.file`” option.
-  - Web or local URL configured in “`vscode_custom_css.import`” option. This importing mechanism uses `@import` and the CSS is placed before the original one, so use `!import` often to elevate its priority.
+- ***Enable Custom CSS and JS*** : It enables custom CSS and JS URLs listed in “`vscode_custom_css.imports`”, an array containing URLs of your custom CSS and JS files.
 
-- ***Disable Custom CSS***: It will disable custom CSS.
+- ***Disable Custom CSS and JS***: It will disable custom CSS.
 
 ##Windows users
 
@@ -43,7 +43,7 @@ sudo chown -R root /usr/share/code
 This extension modifies some VS Code files so use it at your own risk.
 Currently, icons are not supported by the extension functionality that VS Code provides so this extension solves this issue by injecting code into:
 
-- workbench.main.css
+- `electron-browser/index.html`.
 
 The extension will keep a copy of the original file in case something goes wrong. That's what the disable command will do for you.
 

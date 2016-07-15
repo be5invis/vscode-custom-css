@@ -6,5 +6,5 @@ exports.messages = {
 	smthingwrong: 'Something went wrong: ',
 	restartIde: 'Restart Visual Studio Code',
 	notfound: 'Custom CSS not found.',
-	notconfigured: 'Custom CSS path not configured. Please set "vscode_custom_css.file" in your user settings.'
+	notconfigured: 'Custom CSS path not configured. Please set "vscode_custom_css.imports" in your user settings.'
 };

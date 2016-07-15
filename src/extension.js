@@ -22,57 +22,36 @@ function activate(context) {
 	var appDir = path.dirname(require.main.filename);
 
 	var base = appDir + (isWin ? '\\vs\\workbench' : '/vs/workbench');
-	var iconFolder = base + (isWin ? '\\parts\\files\\browser\\media' : '/parts/files/browser/media');
 
-	var cssfile = base + (isWin ? '\\workbench.main.css' : '/workbench.main.css');
-	var cssfilebak = base + (isWin ? '\\workbench.main.css.bak-customcss' : '/workbench.main.css.bak-customcss');
+	var htmlFile = base + (isWin ? '\\electron-browser\\index.html' : '/electron-browser/index.html');
+	var htmlFileBack = base + (isWin ? '\\electron-browser\\index.html.bak-customcss' : '/electron-browser/index.bak-customcss');
 
 	function replaceCss() {
 		var config = vscode.workspace.getConfiguration("vscode_custom_css");
 		console.log(config);
-		if (!config) {
+		if (!config || !config.imports) {
 			vscode.window.showInformationMessage(msg.notconfigured);
 			console.log(msg.notconfigured);
 			fUninstall();
 			return;
 		};
-		var filePath = config.file;
-		var importUrl = config.import;
-		if (filePath) {
-			fs.stat(filePath, function (err, result) {
-				if (err) {
-					vscode.window.showInformationMessage(msg.notfound);
-					fUninstall();
-					return;
-				}
-				try {
-					var css = fs.readFileSync(cssfile, 'utf-8');
-					css += '\n\n/* !!! VSCODE-CUSTOM-CSS-REPLACEMENTS BEGIN !!! */\n';
-					css += fs.readFileSync(filePath, 'utf-8');
-					css += '\n\n/* !!! VSCODE-CUSTOM-CSS-REPLACEMENTS END !!! */\n';
-					fs.writeFileSync(cssfile, css, 'utf-8');
-					enabledRestart();
-				} catch (err) {
-					if (err) { console.log(err); }
-				}
-			});
-		} else if (importUrl) {
-			try {
-				var css = fs.readFileSync(cssfile, 'utf-8');
-				var delta = '\n\n/* !!! VSCODE-CUSTOM-CSS-REPLACEMENTS BEGIN !!! */\n';
-				delta += '@import url(' + importUrl + ');'
-				delta += '\n\n/* !!! VSCODE-CUSTOM-CSS-REPLACEMENTS END !!! */\n';
-				fs.writeFileSync(cssfile, delta + css, 'utf-8');
-				enabledRestart();
-			} catch (err) {
-				if (err) { console.log(err); }
+		var injectHTML = config.imports.map(function (x) {
+			if (!x) return;
+			if (typeof x === 'string') {
+				if (/\.js$/.test(x)) return '<script src="' + x + '"></script>';
+				if (/\.css$/.test(x)) return '<link rel="stylesheet" type="text/css" href="' + x + '"/>';
 			}
-		} else {
-			vscode.window.showInformationMessage(msg.notconfigured);
-			console.log(msg.notconfigured);
-			return;
+		}).join('');
+		try {
+			var html = fs.readFileSync(htmlFile, 'utf-8');
+			html = html.replace(/<!-- !! VSCODE-CUSTOM-CSS-START !! -->[\s\S]*?<!-- !! VSCODE-CUSTOM-CSS-END !! -->/, '');
+			html = html.replace(/(<\/body>)/,
+				'<!-- !! VSCODE-CUSTOM-CSS-START !! -->' + injectHTML + '<!-- !! VSCODE-CUSTOM-CSS-END !! -->');
+			fs.writeFileSync(htmlFile, html, 'utf-8');
+			enabledRestart();
+		} catch (e) {
+			console.log(e);
 		}
-
 	}
 
 	function timeDiff(d1, d2) {
@@ -88,7 +67,7 @@ function activate(context) {
 	}
 
 	function cleanCssInstall() {
-		var c = fs.createReadStream(cssfile).pipe(fs.createWriteStream(cssfilebak));
+		var c = fs.createReadStream(htmlFile).pipe(fs.createWriteStream(htmlFileBack));
 		c.on('finish', function () {
 			replaceCss();
 		});
@@ -100,7 +79,7 @@ function activate(context) {
 				// clean installation
 				cleanInstallFunc();
 			} else {
-				// check cssfilebak's timestamp and compare it to the cssfile's.
+				// check htmlFileBack's timestamp and compare it to the htmlFile's.
 				fs.stat(orfile, function (errOr, statsOr) {
 					if (errOr) {
 						vscode.window.showInformationMessage(msg.smthingwrong + errOr);
@@ -132,14 +111,14 @@ function activate(context) {
 
 	function restoreBak(willReinstall) {
 		var restore = 0;
-		fs.unlink(cssfile, function (err) {
+		fs.unlink(htmlFile, function (err) {
 			if (err) {
 				vscode.window.showInformationMessage(msg.admin);
 				return;
 			}
-			var c = fs.createReadStream(cssfilebak).pipe(fs.createWriteStream(cssfile));
+			var c = fs.createReadStream(htmlFileBack).pipe(fs.createWriteStream(htmlFile));
 			c.on('finish', function () {
-				fs.unlink(cssfilebak);
+				fs.unlink(htmlFileBack);
 				restore++;
 				restoredAction(restore, willReinstall);
 			});
@@ -167,18 +146,18 @@ function activate(context) {
 	// ####  main commands ######################################################
 
 	function fInstall() {
-		installItem(cssfilebak, cssfile, cleanCssInstall);
+		installItem(htmlFileBack, htmlFile, cleanCssInstall);
 	}
 
 	function fUninstall(willReinstall) {
-		fs.stat(cssfilebak, function (errBak, statsBak) {
+		fs.stat(htmlFileBack, function (errBak, statsBak) {
 			if (errBak) {
 				if (willReinstall) {
 					emitEndUninstall();
 				}
 				return;
 			}
-			fs.stat(cssfile, function (errOr, statsOr) {
+			fs.stat(htmlFile, function (errOr, statsOr) {
 				if (errOr) {
 					vscode.window.showInformationMessage(msg.smthingwrong + errOr);
 				} else {
