@@ -1,6 +1,6 @@
 # Custom CSS and JS
 
-**IMPORTANT NOTE**: Custom CSS and JS 2.0 is NOT compatible with Custom CSS 1.x. In case of file corruption, reinstalling VS Code will revert all customized CSS and JS injections to the default.
+**IMPORTANT NOTE: Custom CSS and JS 2.0 is NOT compatible with Custom CSS 1.x. In case of file corruption, reinstalling VS Code will revert all customized CSS and JS injections to the default.**
 
 Custom CSS to your VS Code. Based on [robertohuertasm](https://github.com/robertohuertasm)’s [vscode-icons](https://github.com/robertohuertasm/vscode-icons).
 
