@@ -29,7 +29,7 @@ function activate(context) {
 	function replaceCss() {
 		var config = vscode.workspace.getConfiguration("vscode_custom_css");
 		console.log(config);
-		if (!config || !config.imports) {
+		if (!config || !config.imports || !(config.imports instanceof Array)) {
 			vscode.window.showInformationMessage(msg.notconfigured);
 			console.log(msg.notconfigured);
 			fUninstall();
