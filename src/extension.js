@@ -23,8 +23,8 @@ function activate(context) {
 
 	var base = appDir + (isWin ? '\\vs\\workbench' : '/vs/workbench');
 
-	var htmlFile = base + (isWin ? '\\electron-browser\\index.html' : '/electron-browser/index.html');
-	var htmlFileBack = base + (isWin ? '\\electron-browser\\index.html.bak-customcss' : '/electron-browser/index.bak-customcss');
+	var htmlFile = base + (isWin ? '\\electron-browser\\bootstrap\\index.html' : '/electron-browser/bootstrap/index.html');
+	var htmlFileBack = base + (isWin ? '\\electron-browser\\bootstrap\\index.html.bak-customcss' : '/electron-browser/bootstrap/index.bak-customcss');
 
 	function replaceCss() {
 		var config = vscode.workspace.getConfiguration("vscode_custom_css");
