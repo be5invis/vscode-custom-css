@@ -45,8 +45,8 @@ function activate(context) {
 		try {
 			var html = fs.readFileSync(htmlFile, 'utf-8');
 			html = html.replace(/<!-- !! VSCODE-CUSTOM-CSS-START !! -->[\s\S]*?<!-- !! VSCODE-CUSTOM-CSS-END !! -->/, '');
-			html = html.replace(/(<\/body>)/,
-				'<!-- !! VSCODE-CUSTOM-CSS-START !! -->' + injectHTML + '<!-- !! VSCODE-CUSTOM-CSS-END !! -->');
+			html = html.replace(/(<\/html>)/,
+				'<!-- !! VSCODE-CUSTOM-CSS-START !! -->' + injectHTML + '<!-- !! VSCODE-CUSTOM-CSS-END !! --></html>');
 			fs.writeFileSync(htmlFile, html, 'utf-8');
 			enabledRestart();
 		} catch (e) {
