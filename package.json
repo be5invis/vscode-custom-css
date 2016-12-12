@@ -2,7 +2,7 @@
 	"name": "vscode-custom-css",
 	"displayName": "Custom CSS and JS Loader",
 	"description": "Custom CSS and JS for Visual Studio Code",
-	"version": "2.1.0",
+	"version": "2.2.0",
 	"publisher": "be5invis",
 	"author": {
 		"email": "belleve@typeof.net",
@@ -39,7 +39,17 @@
 				"command": "extension.updateCustomCSS",
 				"title": "Update Custom CSS and JS"
 			}
-		]
+		],
+		"configuration": {
+			"title": "Custom CSS/JS Configuration",
+			"properties": {
+				"vscode_custom_css.imports": {
+					"title": "Custom CSS/JS files, as an array of URLs, not file paths",
+					"type": "array",
+					"default": []
+				}
+			}
+		}
 	},
 	"devDependencies": {
 		"mustache": "^2.2.1",
