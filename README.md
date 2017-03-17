@@ -1,6 +1,6 @@
 # Custom CSS and JS
 
-**IMPORTANT NOTE: Custom CSS and JS 2.0 is NOT compatible with Custom CSS 1.x. In case of file corruption, reinstalling VS Code will revert all customized CSS and JS injections to the default.**
+## **SPECIAL NOTE: If Code complains about that it is corrupted, simply click “Don't show again”.**
 
 Custom CSS to your VS Code. Based on [robertohuertasm](https://github.com/robertohuertasm)’s [vscode-icons](https://github.com/robertohuertasm/vscode-icons).
 
@@ -49,7 +49,7 @@ The extension will keep a copy of the original file in case something goes wrong
 
 As this extension modifies VS Code files it will get disabled with every VS Code update. You will have to enable icons again via command palette.
 
-Take into account that this extension is still in beta so you may find some bugs while playing with it. Please, report them to [the issues section of the Github's repo](https://github.com/be5invis/vscode-custom-icons/issues).
+Take into account that this extension is still in beta so you may find some bugs while playing with it. Please, report them to [the issues section of the Github's repo](https://github.com/be5invis/vscode-custom-css/issues).
 
 **Please, leave a review if you can so the VS Code Team can know that this is a very demanded feature and, maybe, they can then provide a proper way to extend the IDE regarding icons and customizations soon enough. ;D**
 
