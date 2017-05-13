@@ -6,17 +6,8 @@ var path = require('path');
 var events = require('events');
 var msg = require('./messages').messages;
 
-
 const indicatorClass = '__CUSTOM_CSS_JS_INDICATOR_CLS'
-
-const indicatorJS = `<script>(function(){function patch(){
-    const e1 = document.querySelector('#workbench\\\\.parts\\\\.statusbar');
-    const e2 = document.querySelector('#workbench\\\\.parts\\\\.statusbar > .${indicatorClass}')
-	console.log(e1,e2)
-    if(e1 && !e2) {
-        e1.innerHTML += '<span class="statusbar-item right ${indicatorClass}">Custom CSS/JS Loaded</span>'
-    }
-};patch();setInterval(patch,5000)})()</script>`
+const indicatorJS = `<script>(function(){function patch(){const e1 = document.querySelector('#workbench\\\\.parts\\\\.statusbar');const e2 = document.querySelector('#workbench\\\\.parts\\\\.statusbar > .${indicatorClass}');if(e1 && !e2) {let e = document.createElement('span');e.className = 'statusbar-item right ${indicatorClass}';e.innerHTML='Custom CSS/JS Loaded';e1.appendChild(e)}};patch();setInterval(patch,5000)})()</script>`
 
 function activate(context) {
 
