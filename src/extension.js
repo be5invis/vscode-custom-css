@@ -6,6 +6,18 @@ var path = require('path');
 var events = require('events');
 var msg = require('./messages').messages;
 
+
+const indicatorClass = '__CUSTOM_CSS_JS_INDICATOR_CLS'
+
+const indicatorJS = `<script>(function(){function patch(){
+    const e1 = document.querySelector('#workbench\\\\.parts\\\\.statusbar');
+    const e2 = document.querySelector('#workbench\\\\.parts\\\\.statusbar > .${indicatorClass}')
+	console.log(e1,e2)
+    if(e1 && !e2) {
+        e1.innerHTML += '<span class="statusbar-item right ${indicatorClass}">Custom CSS/JS Loaded</span>'
+    }
+};patch();setInterval(patch,5000)})()</script>`
+
 function activate(context) {
 
 	console.log('vscode-customcss is active!');
@@ -46,7 +58,7 @@ function activate(context) {
 			var html = fs.readFileSync(htmlFile, 'utf-8');
 			html = html.replace(/<!-- !! VSCODE-CUSTOM-CSS-START !! -->[\s\S]*?<!-- !! VSCODE-CUSTOM-CSS-END !! -->/, '');
 			html = html.replace(/(<\/html>)/,
-				'<!-- !! VSCODE-CUSTOM-CSS-START !! -->' + injectHTML + '<!-- !! VSCODE-CUSTOM-CSS-END !! --></html>');
+				'<!-- !! VSCODE-CUSTOM-CSS-START !! -->' + indicatorJS + injectHTML + '<!-- !! VSCODE-CUSTOM-CSS-END !! --></html>');
 			fs.writeFileSync(htmlFile, html, 'utf-8');
 			enabledRestart();
 		} catch (e) {
@@ -183,6 +195,5 @@ function activate(context) {
 exports.activate = activate;
 
 // this method is called when your extension is deactivated
-function deactivate() {
-}
+function deactivate() { }
 exports.deactivate = deactivate;
