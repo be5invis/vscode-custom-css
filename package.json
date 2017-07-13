@@ -37,7 +37,7 @@
 			},
 			{
 				"command": "extension.updateCustomCSS",
-				"title": "Update Custom CSS and JS"
+				"title": "Reload Custom CSS and JS"
 			}
 		],
 		"configuration": {
@@ -51,15 +51,8 @@
 			}
 		}
 	},
-	"devDependencies": {
-		"mustache": "^2.2.1",
-		"ncp": "^2.0.0",
-		"underscore": "^1.8.3",
-		"vscode": "^0.11.0"
-	},
+	"devDependencies": {},
 	"dependencies": {
-		"extract-zip": "^1.5.0",
-		"replace-in-file": "^1.0.2",
-		"request": "^2.72.0"
+		"file-url": "^2.0.2"
 	}
 }
