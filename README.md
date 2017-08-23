@@ -21,7 +21,7 @@ As you know to access the command palette and introduce commands you can use ***
   - **IMPORTANT**: Items in “`vscode_custom_css.imports`” should be URLs, instead of file paths. For local files, prefix it with “`file://`”.
 - ***Disable Custom CSS and JS***: It will disable custom CSS.
 
-##Windows users
+## Windows users
 
 **In Windows, make sure you run your VS Code in Administrator mode before enabling or disabling your custom style!**
 
