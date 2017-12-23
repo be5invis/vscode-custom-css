@@ -2,6 +2,7 @@
 
 ### **SPECIAL NOTE: If Code complains about that it is corrupted, simply click “Don't show again”.**
 ### **NOTE: Every time after Code is updated, please re-enable Custom CSS.**
+### **NOTE: Every time you change the configuration, please re-enable Custom CSS.**
 
 Custom CSS to your VS Code. Based on [robertohuertasm](https://github.com/robertohuertasm)’s [vscode-icons](https://github.com/robertohuertasm/vscode-icons).
 
