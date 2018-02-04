@@ -3,6 +3,7 @@ var fs = require('fs');
 var path = require('path');
 var events = require('events');
 var msg = require('./messages').messages;
+var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
 var fileUrl = require('file-url');
 
