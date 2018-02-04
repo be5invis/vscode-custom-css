@@ -44,9 +44,19 @@
 			"title": "Custom CSS/JS Configuration",
 			"properties": {
 				"vscode_custom_css.imports": {
-					"title": "Custom CSS/JS files, as an array of URLs, not file paths",
+					"description": "Custom CSS/JS files, as an array of URLs, not file paths",
 					"type": "array",
 					"default": []
+				},
+				"vscode_custom_css.statusbar": {
+					"description": "Enable Status Indicator",
+					"type": "boolean",
+					"default": true
+				},
+				"vscode_custom_css.policy": {
+					"description": "Disable vscode Content Policy (required if loading from URL)",
+					"type": "boolean",
+					"default": false
 				}
 			}
 		}
