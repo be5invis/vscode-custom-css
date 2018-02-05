@@ -3,11 +3,9 @@ var fs = require('fs');
 var path = require('path');
 var events = require('events');
 var msg = require('./messages').messages;
+var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
 var fileUrl = require('file-url');
-
-const indicatorClass = '__CUSTOM_CSS_JS_INDICATOR_CLS'
-const indicatorJS = `<script src="${fileUrl(__dirname + '/statusbar.js')}"></script>`
 
 function activate(context) {
 
@@ -29,6 +27,16 @@ function activate(context) {
 	var htmlFile = base + (isWin ? '\\electron-browser\\bootstrap\\index.html' : '/electron-browser/bootstrap/index.html');
 	var htmlFileBack = base + (isWin ? '\\electron-browser\\bootstrap\\index.html.bak-customcss' : '/electron-browser/bootstrap/index.bak-customcss');
 
+	function httpGet(theUrl)
+	{
+		var xmlHttp = null;
+
+		xmlHttp = new XMLHttpRequest();
+		xmlHttp.open( "GET", theUrl, false );
+		xmlHttp.send( null );
+		return xmlHttp.responseText;
+	}
+
 	function replaceCss() {
 		var config = vscode.workspace.getConfiguration("vscode_custom_css");
 		console.log(config);
@@ -41,13 +49,27 @@ function activate(context) {
 		var injectHTML = config.imports.map(function (x) {
 			if (!x) return;
 			if (typeof x === 'string') {
-				if (/\.js$/.test(x)) return '<script src="' + x + '"></script>';
-				if (/\.css$/.test(x)) return '<link rel="stylesheet" type="text/css" href="' + x + '"/>';
+				if (/^file.*\.js$/.test(x)) return '<script src="' + x + '"></script>';
+				if (/^file.*\.css$/.test(x)) return '<link rel="stylesheet" href="' + x + '"/>';
+				if (/^http.*\.js$/.test(x)) return '<script>' + httpGet(x) + '</script>';
+				if (/^http.*\.css$/.test(x)) return '<style>' + httpGet(x) + '</style>';
 			}
 		}).join('');
 		try {
 			var html = fs.readFileSync(htmlFile, 'utf-8');
 			html = html.replace(/<!-- !! VSCODE-CUSTOM-CSS-START !! -->[\s\S]*?<!-- !! VSCODE-CUSTOM-CSS-END !! -->/, '');
+
+			if (config.policy) {
+				html = html.replace(/<meta.*http-equiv="Content-Security-Policy".*>/, '');
+			}
+
+			var indicatorClass = ''
+			var indicatorJS = ''
+			if (config.statusbar){
+				indicatorClass = '__CUSTOM_CSS_JS_INDICATOR_CLS'
+				indicatorJS = `<script src="${fileUrl(__dirname + '/statusbar.js')}"></script>`
+			}
+
 			html = html.replace(/(<\/html>)/,
 				'<!-- !! VSCODE-CUSTOM-CSS-START !! -->' + indicatorJS + injectHTML + '<!-- !! VSCODE-CUSTOM-CSS-END !! --></html>');
 			fs.writeFileSync(htmlFile, html, 'utf-8');

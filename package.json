@@ -1,63 +1,74 @@
 {
-	"name": "vscode-custom-css",
-	"displayName": "Custom CSS and JS Loader",
-	"description": "Custom CSS and JS for Visual Studio Code",
-	"version": "2.6.1",
-	"publisher": "be5invis",
-	"author": {
-		"email": "belleve@typeof.net",
-		"name": "Belleve Invis",
-		"url": "https://typeof.net"
-	},
-	"engines": {
-		"vscode": "^1.9.1"
-	},
-	"categories": [
-		"Other",
-		"Themes"
-	],
-	"preview": true,
-	"icon": "images/logo.png",
-	"galleryBanner": {
-		"color": "#EEEEEE"
-	},
-	"activationEvents": [
-		"*"
-	],
-	"main": "./src/extension",
-	"contributes": {
-		"commands": [
-			{
-				"command": "extension.installCustomCSS",
-				"title": "Enable Custom CSS and JS"
-			},
-			{
-				"command": "extension.uninstallCustomCSS",
-				"title": "Disable Custom CSS and JS"
-			},
-			{
-				"command": "extension.updateCustomCSS",
-				"title": "Reload Custom CSS and JS"
-			}
-		],
-		"configuration": {
-			"title": "Custom CSS/JS Configuration",
-			"properties": {
-				"vscode_custom_css.imports": {
-					"title": "Custom CSS/JS files, as an array of URLs, not file paths",
-					"type": "array",
-					"default": []
-				}
-			}
-		}
-	},
-	"devDependencies": {},
-	"dependencies": {
-		"file-url": "^2.0.2"
-	},
-	"__metadata": {
-		"id": "1b160753-ae5e-42bb-82ad-d115ce5c10f4",
-		"publisherDisplayName": "be5invis",
-		"publisherId": "8c148d69-cbc6-480b-bd8b-a42715926324"
-	}
+  "name": "vscode-custom-css",
+  "displayName": "Custom CSS and JS Loader",
+  "description": "Custom CSS and JS for Visual Studio Code",
+  "version": "2.6.1",
+  "publisher": "be5invis",
+  "author": {
+    "email": "belleve@typeof.net",
+    "name": "Belleve Invis",
+    "url": "https://typeof.net"
+  },
+  "engines": {
+    "vscode": "^1.9.1"
+  },
+  "categories": [
+    "Other",
+    "Themes"
+  ],
+  "preview": true,
+  "icon": "images/logo.png",
+  "galleryBanner": {
+    "color": "#EEEEEE"
+  },
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./src/extension",
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.installCustomCSS",
+        "title": "Enable Custom CSS and JS"
+      },
+      {
+        "command": "extension.uninstallCustomCSS",
+        "title": "Disable Custom CSS and JS"
+      },
+      {
+        "command": "extension.updateCustomCSS",
+        "title": "Reload Custom CSS and JS"
+      }
+    ],
+    "configuration": {
+      "title": "Custom CSS/JS Configuration",
+      "properties": {
+        "vscode_custom_css.imports": {
+          "description": "Custom CSS/JS files, as an array of URLs, not file paths",
+          "type": "array",
+          "default": []
+        },
+        "vscode_custom_css.statusbar": {
+          "description": "Enable Status Indicator",
+          "type": "boolean",
+          "default": true
+        },
+        "vscode_custom_css.policy": {
+          "description": "Disable vscode Content Policy (required if loading from URL)",
+          "type": "boolean",
+          "default": false
+        }
+      }
+    }
+  },
+  "devDependencies": {},
+  "dependencies": {
+    "file-url": "^2.0.2",
+    "xmlhttprequest": "^1.8.0"
+  },
+  "__metadata": {
+    "id": "1b160753-ae5e-42bb-82ad-d115ce5c10f4",
+    "publisherDisplayName": "be5invis",
+    "publisherId": "8c148d69-cbc6-480b-bd8b-a42715926324"
+  }
 }
