@@ -22,6 +22,7 @@ As you know to access the command palette and introduce commands you can use ***
 - ***Enable Custom CSS and JS*** : It enables custom CSS and JS URLs listed in “`vscode_custom_css.imports`”, an array containing URLs of your custom CSS and JS files, in your user settings.
   - **IMPORTANT**: Items in “`vscode_custom_css.imports`” should be URLs, instead of file paths. For local files, prefix it with “`file://`”.
 - ***Disable Custom CSS and JS***: It will disable custom CSS.
+- ***Reload Custom CSS and JS***: Disable and then re-enable it.
 
 ## Windows users
 
