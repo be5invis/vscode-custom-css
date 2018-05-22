@@ -6,14 +6,57 @@
 
 Custom CSS to your VS Code. Based on [robertohuertasm](https://github.com/robertohuertasm)’s [vscode-icons](https://github.com/robertohuertasm/vscode-icons).
 
-![screenshot](https://raw.githubusercontent.com/be5invis/vscode-custom-css/master/screenshot.png)(Yes, it can co-exist with [vscode-icons](https://github.com/robertohuertasm/vscode-icons).)
+![screenshot](https://raw.githubusercontent.com/be5invis/vscode-custom-css/master/screenshot.png)
 
-## Installation
+## Getting Started
 
-Some people have reported that they cannot find the extension when they insert the installation command:
-```
-ext install vscode-custom-css
-```
+1. Install this extension.
+
+2. Add to `settings.json`:
+
+   ```json
+       "vscode_custom_css.imports": [""],
+       "vscode_custom_css.policy": true,
+   ```
+
+   **VERY IMPORTANT**: Items in `vscode_vustom_css.imports` must be **URL**s. Plain file paths are **NOT URLs**.
+
+3. Restart VSCode with proper permission to modify itself:
+
+   1. **Windows**: Restart with Administrator Permission.
+
+   2. **Mac**: Close the VSCode and open the terminal and run a command. Then restart VSCode.
+
+      For VSCode:
+
+      ```shell
+      sudo chown -R $(whoami) '/Applications/Visual Studio Code.app/Contents/MacOS/Electron'
+      ```
+
+      For VSCode Insiders:
+
+      ```shell
+      sudo chown -R $(whoami) '/Applications/Visual Studio Code - Insiders.app/Contents/MacOS/Electron'
+      ```
+
+   3. **Linux**: Close the VSCode and open the terminal and run a command. Then restart VSCode.
+
+      For VSCode:
+
+      ```bash
+      sudo chown -R $(whoami) /usr/share/code
+      ```
+
+      For VSCode Insiders:
+
+      ```bash
+      sudo chown -R $(whoami) /usr/share/code-insiders
+      ```
+
+4. Activate command "Reload Custom CSS and JS".
+
+5. Restart.
+
 
 ## Extension commands
 
