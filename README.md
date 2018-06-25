@@ -19,7 +19,7 @@ Custom CSS to your VS Code. Based on [robertohuertasm](https://github.com/robert
        "vscode_custom_css.policy": true,
    ```
 
-   **VERY IMPORTANT**: Items in `vscode_vustom_css.imports` must be **URL**s. Plain file paths are **NOT URLs**.
+   **VERY IMPORTANT**: Items in `vscode_custom_css.imports` must be **URL**s. Plain file paths are **NOT URLs**.
 
 3. Restart VSCode with proper permission to modify itself:
 
