@@ -22,10 +22,10 @@ function activate(context) {
 	var isWin = /^win/.test(process.platform);
 	var appDir = path.dirname(require.main.filename);
 
-	var base = appDir + (isWin ? '\\vs\\workbench' : '/vs/workbench');
+	var base = appDir + (isWin ? '\\vs\\code' : '/vs/code');
 
-	var htmlFile = base + (isWin ? '\\electron-browser\\bootstrap\\index.html' : '/electron-browser/bootstrap/index.html');
-	var htmlFileBack = base + (isWin ? '\\electron-browser\\bootstrap\\index.html.bak-customcss' : '/electron-browser/bootstrap/index.bak-customcss');
+	var htmlFile = base + (isWin ? '\\electron-browser\\workbench\\workbench.html' : '/electron-browser/workbench/workbench.html');
+	var htmlFileBack = base + (isWin ? '\\electron-browser\\workbench\\workbench.html.bak-customcss' : '/electron-browser/workbench/workbench.bak-customcss');
 
 	function httpGet(theUrl)
 	{
