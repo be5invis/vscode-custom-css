@@ -2,7 +2,7 @@
   "name": "vscode-custom-css",
   "displayName": "Custom CSS and JS Loader",
   "description": "Custom CSS and JS for Visual Studio Code",
-  "version": "2.7.1",
+  "version": "3.0.0",
   "publisher": "be5invis",
   "author": {
     "email": "belleve@typeof.net",
@@ -10,7 +10,7 @@
     "url": "https://typeof.net"
   },
   "engines": {
-    "vscode": "^1.9.1"
+    "vscode": "^1.28.0"
   },
   "categories": [
     "Other",
