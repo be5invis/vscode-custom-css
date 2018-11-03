@@ -25,33 +25,7 @@ Custom CSS to your VS Code. Based on [robertohuertasm](https://github.com/robert
 
    1. **Windows**: Restart with Administrator Permission.
 
-   2. **Mac**: Close the VSCode and open the terminal and run a command. Then restart VSCode.
-
-      For VSCode:
-
-      ```shell
-      sudo chown -R $(whoami) '/Applications/Visual Studio Code.app/Contents/MacOS/Electron'
-      ```
-
-      For VSCode Insiders:
-
-      ```shell
-      sudo chown -R $(whoami) '/Applications/Visual Studio Code - Insiders.app/Contents/MacOS/Electron'
-      ```
-
-   3. **Linux**: Close the VSCode and open the terminal and run a command. Then restart VSCode.
-
-      For VSCode:
-
-      ```bash
-      sudo chown -R $(whoami) /usr/share/code
-      ```
-
-      For VSCode Insiders:
-
-      ```bash
-      sudo chown -R $(whoami) /usr/share/code-insiders
-      ```
+   2. **MacOS and Linux**: See instructions below.
 
 4. Activate command "Reload Custom CSS and JS".
 
@@ -63,7 +37,7 @@ Custom CSS to your VS Code. Based on [robertohuertasm](https://github.com/robert
 As you know to access the command palette and introduce commands you can use ***F1*** (all OS), ***Ctrl+Shift+P*** (Windows & Linux) or ***Cmd+Shift+P*** (OS X).
 
 - ***Enable Custom CSS and JS*** : It enables custom CSS and JS URLs listed in “`vscode_custom_css.imports`”, an array containing URLs of your custom CSS and JS files, in your user settings.
-  - **IMPORTANT**: Items in “`vscode_custom_css.imports`” should be URLs, instead of file paths. For local files, prefix it with “`file://`”.
+  - **IMPORTANT**: Items in “`vscode_custom_css.imports`” should be **URLs**, instead of file paths. For local files, prefix it with “`file://`”.
 - ***Disable Custom CSS and JS***: It will disable custom CSS.
 - ***Reload Custom CSS and JS***: Disable and then re-enable it.
 
@@ -71,21 +45,29 @@ As you know to access the command palette and introduce commands you can use ***
 
 **In Windows, make sure you run your VS Code in Administrator mode before enabling or disabling your custom style!**
 
-## Linux users
-**Linux also requires you to reclaim ownership of the vs code folders** 
-You can achieve this by executing this on your terminal (Ubuntu):
+## Mac and Linux users
+**The extension would NOT if Code cannot modify itself.** The cases include:
+
+- Code files being read-only, like on a read-only file system or,
+- Code is not started with the permissions to modify itself.
+
+**You need to claim ownership on Code's installation directory, by running this command**:
+
 ```sh
-#for vs code:
-sudo chown -R $(whoami) /usr/share/code
-#for vs code insiders:
-sudo chown -R $(whoami) /usr/share/code-insiders
-#if you want to check your folder's owner:
-ls -la /usr/share/code
-#if you want to rollback this permissions back to root:
-sudo chown -R root /usr/share/code
+sudo chown -R $(whoami) <Path to Code>
 ```
 
+The placeholder `<Path to Code>` means the path to VSCode installation. It is typically:
+
+- `/Applications/Visual Studio Code.app/Contents/MacOS/Electron`, on MacOS;
+- `/Applications/Visual Studio Code - Insiders.app/Contents/MacOS/Electron`, on MacOS when using Insiders branch;
+- `/usr/share/code`, on most Linux;
+- `/opt/visual-studio-code/` on Arch Linux.
+
+Mac and Linux package managers may have customized installation path. Please double check your path is correct.
+
 # Disclaimer
+
 This extension modifies some VS Code files so use it at your own risk.
 Currently, icons are not supported by the extension functionality that VS Code provides so this extension solves this issue by injecting code into:
 
