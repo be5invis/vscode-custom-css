@@ -143,7 +143,7 @@ function activate(context) {
 			}
 			var c = fs.createReadStream(htmlFileBack).pipe(fs.createWriteStream(htmlFile));
 			c.on('finish', function () {
-				fs.unlink(htmlFileBack);
+				fs.unlinkSync(htmlFileBack);
 				restore++;
 				restoredAction(restore, willReinstall);
 			});
