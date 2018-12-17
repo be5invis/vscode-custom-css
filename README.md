@@ -20,10 +20,12 @@ Custom CSS to your VS Code. Based on [robertohuertasm](https://github.com/robert
    ```
 
    **VERY IMPORTANT**: Items in `vscode_custom_css.imports` must be **URL**s. Plain file paths are **NOT URLs**.
-   
-   **Windows File URL Ex.** `file:///C:/Users/MyUserName/Documents/custom.css`
 
-   **MacOS and Linux File URL Ex.** `file:///Users/MyUserName/Documents/custom.css`
+   - **Windows File URL Example**: `file:///C:/Users/MyUserName/Documents/custom.css`
+     - The `C:/` part is **REQUIRED.**
+
+   - **MacOS and Linux File URL Example**: `file:///Users/MyUserName/Documents/custom.css`
+   - [See here](https://en.wikipedia.org/wiki/File_URI_scheme) for more details.
 
 3. Restart VSCode with proper permission to modify itself:
 
