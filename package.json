@@ -16,6 +16,13 @@
     "Other",
     "Themes"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/be5invis/vscode-custom-css"
+  },
+  "bugs": {
+    "url": "https://github.com/be5invis/vscode-custom-css/issues"
+  },
   "preview": true,
   "icon": "images/logo.png",
   "galleryBanner": {
