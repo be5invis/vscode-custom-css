@@ -9,7 +9,7 @@ var fileUrl = require('file-url');
 
 function activate(context) {
 
-	console.log('vscode-customcss is active!');
+	// console.log('vscode-customcss is active!');
 
 	process.on('uncaughtException', function (err) {
 		if (/ENOENT|EACCES|EPERM/.test(err.code)) {
