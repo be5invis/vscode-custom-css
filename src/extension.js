@@ -9,7 +9,10 @@ var fileUrl = require('file-url');
 
 function activate(context) {
 
-	// console.log('vscode-customcss is active!');
+	var config = vscode.workspace.getConfiguration("vscode_custom_css");
+	if (!config.suppressDevtoolsNotification) {
+		console.log('vscode-customcss is active!');
+	}
 
 	process.on('uncaughtException', function (err) {
 		if (/ENOENT|EACCES|EPERM/.test(err.code)) {
@@ -38,7 +41,7 @@ function activate(context) {
 	}
 
 	function replaceCss() {
-		var config = vscode.workspace.getConfiguration("vscode_custom_css");
+		config = vscode.workspace.getConfiguration("vscode_custom_css");
 		console.log(config);
 		if (!config || !config.imports || !(config.imports instanceof Array)) {
 			vscode.window.showInformationMessage(msg.notconfigured);
