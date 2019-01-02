@@ -64,6 +64,11 @@
           "description": "Disable vscode Content Policy (required if loading from URL)",
           "type": "boolean",
           "default": false
+        },
+        "vscode_custom_css.suppressDevtoolsNotification": {
+          "description": "If true - no notification in Developer Tools that extension is active.",
+          "type": "boolean",
+          "default": false
         }
       }
     }
