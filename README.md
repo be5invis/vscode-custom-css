@@ -10,7 +10,8 @@ Custom CSS to your VS Code. Based on [robertohuertasm](https://github.com/robert
 
 ## Getting Started
 
-1. Install this extension.
+1. Install this extension
+   - Important: you should run `npm install` inside the extension directory.
 
 2. Add to `settings.json`:
 
