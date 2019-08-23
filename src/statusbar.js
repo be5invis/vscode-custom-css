@@ -6,6 +6,7 @@
             let e = document.createElement('span');
             e.className = 'statusbar-item right __CUSTOM_CSS_JS_INDICATOR_CLS';
             e.innerHTML = `<i class="octicon octicon-paintcan"></i>`;
+            e.style.padding =  '3px 10px 0 0';
             e1.appendChild(e)
         }
     };
