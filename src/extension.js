@@ -56,12 +56,15 @@ function activate(context) {
 			.map(function(x) {
 				if (!x) return;
 				if (typeof x === "string") {
-					if (/^(file|data).*\.js$/.test(x))
+					if (/^((file:.*\.js)|(data:.*))$/.test(x))
 						return '<script src="' + x + '"></script>';
-					if (/^(file|data).*\.css$/.test(x))
+
+					if (/^((file:.*\.css)|(data:.*))$/.test(x))
 						return '<link rel="stylesheet" href="' + x + '"/>';
+
 					if (/^http.*\.js$/.test(x))
 						return "<script>" + httpGet(x) + "</script>";
+
 					if (/^http.*\.css$/.test(x))
 						return "<style>" + httpGet(x) + "</style>";
 				}
