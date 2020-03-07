@@ -18,21 +18,10 @@ function activate(context) {
 	});
 
 	var eventEmitter = new events.EventEmitter();
-	var isWin = /^win/.test(process.platform);
 	var appDir = path.dirname(require.main.filename);
-
-	var base = appDir + (isWin ? "\\vs\\code" : "/vs/code");
-
-	var htmlFile =
-		base +
-		(isWin
-			? "\\electron-browser\\workbench\\workbench.html"
-			: "/electron-browser/workbench/workbench.html");
-	var htmlFileBack =
-		base +
-		(isWin
-			? "\\electron-browser\\workbench\\workbench.html.bak-customcss"
-			: "/electron-browser/workbench/workbench.bak-customcss");
+	var base = path.join(appDir, "vs", "code");
+	var htmlFile = path.join(base, "electron-browser", "workbench", "workbench.html");
+	var htmlFileBack = path.join(base, "electron-browser", "workbench", "workbench.bak-customcss");
 
 	function httpGet(theUrl) {
 		var xmlHttp = null;
