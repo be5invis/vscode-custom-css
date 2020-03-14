@@ -45,10 +45,10 @@ function activate(context) {
 			.map(function(x) {
 				if (!x) return;
 				if (typeof x === "string") {
-					if (/^((file:.*\.js)|(data:.*))$/.test(x))
+					if (/^((file:.*\.js)|(data:.*javascript|js.*))$/.test(x))
 						return '<script src="' + x + '"></script>';
 
-					if (/^((file:.*\.css)|(data:.*))$/.test(x))
+					if (/^((file:.*\.css)|(data:.*css.*))$/.test(x))
 						return '<link rel="stylesheet" href="' + x + '"/>';
 
 					if (/^http.*\.js$/.test(x))
