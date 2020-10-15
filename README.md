@@ -67,7 +67,7 @@ The placeholder `<Path to Visual Studio Code>` means the path to VSCode installa
 - `/Applications/Visual Studio Code.app/Contents/MacOS/Electron`, on MacOS;
 - `/Applications/Visual Studio Code - Insiders.app/Contents/MacOS/Electron`, on MacOS when using Insiders branch;
 - `/usr/share/code`, on most Linux;
-- `/usr/lib/code/` on Arch Linux.
+- `/usr/lib/code/` or `/opt/visual-studio-code` on Arch Linux.
 
 Mac and Linux package managers may have customized installation path. Please double check your path is correct.
 
