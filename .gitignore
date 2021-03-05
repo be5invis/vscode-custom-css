@@ -2,3 +2,4 @@ node_modules
 test
 .vscode
 .vsixmanifest
+.staging-custom-css

@@ -13,5 +13,6 @@ exports.messages = {
 		"Custom CSS and JS path not configured. " +
 		'Please set "vscode_custom_css.imports" in your user settings.',
 	reloadAfterVersionUpgrade:
-		"Detected reloading CSS / JS after VSCode is upgraded. " + "Performing application only."
+		"Detected reloading CSS / JS after VSCode is upgraded. " + "Performing application only.",
+	cannotLoad: url => `Cannot load '${url}'. Skipping.`
 };

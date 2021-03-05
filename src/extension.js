@@ -2,9 +2,11 @@ const vscode = require("vscode");
 const fs = require("fs");
 const path = require("path");
 const msg = require("./messages").messages;
-const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-const fileUrl = require("file-url");
+const mkdirp = require("mkdirp");
 const uuid = require("uuid");
+const fetch = require("node-fetch");
+const Url = require("url");
+const rmfr = require("rmfr");
 
 function activate(context) {
 	console.log("vscode-custom-css is active!");
@@ -22,74 +24,79 @@ function activate(context) {
 	const BackupFilePath = uuid =>
 		path.join(base, "electron-browser", "workbench", `workbench.${uuid}.bak-custom-css`);
 
-	function httpGet(theUrl) {
-		const xmlHttp = new XMLHttpRequest();
-		xmlHttp.open("GET", theUrl, false);
-		xmlHttp.send(null);
-		return xmlHttp.responseText;
+	async function getContent(url) {
+		if (/^file:/.test(url)) {
+			const fp = Url.fileURLToPath(url);
+			return await fs.promises.readFile(fp);
+		} else {
+			const response = await fetch(url);
+			return response.buffer();
+		}
 	}
 
 	// ####  main commands ######################################################
 
-	function fInstall() {
-		deleteBackupFiles();
+	async function fInstall() {
+		await deleteBackupFiles();
 		const uuidSession = uuid.v4();
-		const c = fs
-			.createReadStream(htmlFile)
-			.pipe(fs.createWriteStream(BackupFilePath(uuidSession)));
-		c.on("finish", () => performPatch(uuidSession));
+		await fs.promises.copyFile(htmlFile, BackupFilePath(uuidSession));
+		await performPatch(uuidSession);
 	}
 
 	function fUpdate() {
-		fUninstallImpl(true);
+		return fUninstallImpl(true);
 	}
 
 	function fUninstall() {
-		fUninstallImpl(false);
+		return fUninstallImpl(false);
 	}
 
-	function fUninstallImpl(willReinstall) {
-		fs.stat(htmlFile, function (errHtml, statsHtml) {
-			if (errHtml) return vscode.window.showInformationMessage(msg.somethingWrong + errHtml);
-			const backupUuid = getBackupUuid(htmlFile);
-			if (!backupUuid) return uninstallComplete(true, willReinstall);
+	async function fUninstallImpl(willReinstall) {
+		try {
+			await fs.promises.stat(htmlFile);
+		} catch (errHtml) {
+			return vscode.window.showInformationMessage(msg.somethingWrong + errHtml);
+		}
+		const backupUuid = await getBackupUuid(htmlFile);
+		if (!backupUuid) {
+			await uninstallComplete(true, willReinstall);
+			return;
+		}
 
-			const backupPath = BackupFilePath(backupUuid);
-			fs.stat(backupPath, function (errBak, statsBak) {
-				if (errBak) {
-					uninstallComplete(true, willReinstall);
-				} else {
-					restoreBak(backupPath, willReinstall);
-				}
-			});
-		});
+		const backupPath = BackupFilePath(backupUuid);
+		try {
+			await fs.promises.stat(backupPath);
+			await restoreBak(backupPath, willReinstall);
+		} catch (e) {
+			await uninstallComplete(true, willReinstall);
+		}
 	}
 
 	// #### Support commands ######################################################
 
-	function getBackupUuid(htmlFile) {
-		const htmlContent = fs.readFileSync(htmlFile, "utf-8");
+	async function getBackupUuid(fp) {
+		const htmlContent = await fs.promises.readFile(fp, "utf-8");
 		const m = htmlContent.match(/<!-- !! VSCODE-CUSTOM-CSS-SESSION-ID ([0-9a-fA-F-]+) !! -->/);
 		if (!m) return null;
 		else return m[1];
 	}
 
-	function performPatch(uuidSession) {
+	async function performPatch(uuidSession) {
 		const config = vscode.workspace.getConfiguration("vscode_custom_css");
-		if (!patchIsProperlyConfigured(config))
+		if (!patchIsProperlyConfigured(config)) {
 			return vscode.window.showInformationMessage(msg.notConfigured);
+		}
 
-		let html = fs.readFileSync(htmlFile, "utf-8");
+		let html = await fs.promises.readFile(htmlFile, "utf-8");
 		html = clearExistingPatches(html);
 
-		const injectHTML = computeInjectedHTML(config);
-		if (config.policy)
-			html = html.replace(/<meta.*http-equiv="Content-Security-Policy".*>/, "");
+		const staging = await createStagingDir(uuidSession);
+
+		const injectHTML = await patchHtml(staging, config);
+		html = html.replace(/<meta.*http-equiv="Content-Security-Policy".*>/, "");
 
 		let indicatorJS = "";
-		if (config.statusbar) {
-			indicatorJS = `<script src="${fileUrl(__dirname + "/statusbar.js")}"></script>\n`;
-		}
+		if (config.statusbar) indicatorJS = await getIndicatorJs();
 
 		html = html.replace(
 			/(<\/html>)/,
@@ -99,7 +106,12 @@ function activate(context) {
 				injectHTML +
 				"<!-- !! VSCODE-CUSTOM-CSS-END !! -->\n</html>"
 		);
-		fs.writeFileSync(htmlFile, html, "utf-8");
+		try {
+			await fs.promises.writeFile(htmlFile, html, "utf-8");
+		} catch (e) {
+			vscode.window.showInformationMessage(msg.admin);
+			disabledRestart();
+		}
 		enabledRestart();
 	}
 	function clearExistingPatches(html) {
@@ -110,54 +122,81 @@ function activate(context) {
 		html = html.replace(/<!-- !! VSCODE-CUSTOM-CSS-SESSION-ID [\w-]+ !! -->\n*/g, "");
 		return html;
 	}
+
 	function patchIsProperlyConfigured(config) {
 		return config && config.imports && config.imports instanceof Array;
 	}
-	function computeInjectedHTML(config) {
-		return config.imports.map(computeInjectedHTMLItem).join("");
+	async function createStagingDir(uuidSession) {
+		const stagingDirBase = path.resolve(__dirname, "../.staging-custom-css");
+		await rmfr(stagingDirBase);
+		const staging = path.resolve(stagingDirBase, uuidSession);
+		await mkdirp(staging);
+		return staging;
 	}
-	function computeInjectedHTMLItem(x) {
-		if (!x) return "";
-		if (typeof x !== "string") return "";
+	async function patchHtml(staging, config) {
+		let res = "";
+		for (const item of config.imports) {
+			const imp = await patchHtmlForItem(staging, item);
+			if (imp) res += imp;
+		}
+		return res;
+	}
+	async function patchHtmlForItem(staging, url) {
+		if (!url) return "";
+		if (typeof url !== "string") return "";
 
-		if (/^((file:.*\.js)|(data:.*javascript|js.*))$/.test(x))
-			return '<script src="' + x + '"></script>\n';
+		// Copy the resource to a staging directory inside the extension dir
+		let parsed = new Url.URL(url);
+		const ext = path.extname(parsed.pathname);
 
-		if (/^((file:.*\.css)|(data:.*css.*))$/.test(x))
-			return '<link rel="stylesheet" href="' + x + '"/>\n';
-
-		if (/^http.*\.js$/.test(x)) return "<script>" + httpGet(x) + "</script>\n";
-
-		if (/^http.*\.css$/.test(x)) return "<style>" + httpGet(x) + "</style>\n";
+		const uuidFile = uuid.v4();
+		try {
+			const fetched = await getContent(url);
+			const tempPath = path.resolve(staging, uuidFile + ext);
+			await fs.promises.writeFile(tempPath, fetched);
+			if (ext === ".css") {
+				return `<link rel="stylesheet" href="${Url.pathToFileURL(tempPath)}"/>\n`;
+			} else if (ext === ".js") {
+				return `<script src="${Url.pathToFileURL(tempPath)}"></script>\n`;
+			} else {
+				console.log(`Unsupported extension type: ${ext}`);
+			}
+		} catch (e) {
+			vscode.window.showInformationMessage(msg.cannotLoad(url));
+			console.log(e);
+		}
+	}
+	async function getIndicatorJs() {
+		return `<script src="${Url.pathToFileURL(`${__dirname}/statusbar.js`)}"></script>\n`;
 	}
 
-	function uninstallComplete(succeeded, willReinstall) {
+	async function uninstallComplete(succeeded, willReinstall) {
 		if (!succeeded) return;
 		if (willReinstall) {
-			fInstall();
+			await fInstall();
 		} else {
-			deleteBackupFiles();
+			await deleteBackupFiles();
 			disabledRestart();
 		}
 	}
 
-	function restoreBak(backupFilePath, willReinstall) {
-		fs.unlink(htmlFile, function (err) {
-			if (err) {
-				vscode.window.showInformationMessage(msg.admin);
-				return;
-			}
-			const c = fs.createReadStream(backupFilePath).pipe(fs.createWriteStream(htmlFile));
-			c.on("finish", function () {
-				uninstallComplete(true, willReinstall);
-			});
-		});
+	async function restoreBak(backupFilePath, willReinstall) {
+		try {
+			await fs.promises.unlink(htmlFile);
+		} catch (e) {
+			return vscode.window.showInformationMessage(msg.admin);
+		}
+
+		await fs.promises.copyFile(backupFilePath, htmlFile);
+		await uninstallComplete(true, willReinstall);
 	}
-	function deleteBackupFiles() {
+	async function deleteBackupFiles() {
 		const htmlDir = path.dirname(htmlFile);
-		const htmlDirItems = fs.readdirSync(htmlDir);
+		const htmlDirItems = await fs.promises.readdir(htmlDir);
 		for (const item of htmlDirItems) {
-			if (item.endsWith(".bak-custom-css")) fs.unlinkSync(path.join(htmlDir, item));
+			if (item.endsWith(".bak-custom-css")) {
+				await fs.promises.unlink(path.join(htmlDir, item));
+			}
 		}
 	}
 
@@ -176,15 +215,15 @@ function activate(context) {
 			.then(reloadWindow);
 	}
 
-	const installCustomCSS = vscode.commands.registerCommand(
-		"extension.installCustomCSS",
-		fInstall
+	const installCustomCSS = vscode.commands.registerCommand("extension.installCustomCSS", () =>
+		fInstall()
 	);
-	const uninstallCustomCSS = vscode.commands.registerCommand(
-		"extension.uninstallCustomCSS",
-		fUninstall
+	const uninstallCustomCSS = vscode.commands.registerCommand("extension.uninstallCustomCSS", () =>
+		fUninstall()
 	);
-	const updateCustomCSS = vscode.commands.registerCommand("extension.updateCustomCSS", fUpdate);
+	const updateCustomCSS = vscode.commands.registerCommand("extension.updateCustomCSS", () =>
+		fUpdate()
+	);
 
 	context.subscriptions.push(installCustomCSS);
 	context.subscriptions.push(uninstallCustomCSS);
