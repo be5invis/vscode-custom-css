@@ -11,13 +11,6 @@ const rmfr = require("rmfr");
 function activate(context) {
 	console.log("vscode-custom-css is active!");
 
-	process.on("uncaughtException", function (err) {
-		if (/ENOENT|EACCES|EPERM/.test(err.code)) {
-			vscode.window.showInformationMessage(msg.admin);
-			return;
-		}
-	});
-
 	const appDir = path.dirname(require.main.filename);
 	const base = path.join(appDir, "vs", "code");
 	const htmlFile = path.join(base, "electron-browser", "workbench", "workbench.html");
@@ -36,50 +29,78 @@ function activate(context) {
 
 	// ####  main commands ######################################################
 
-	async function fInstall() {
-		await deleteBackupFiles();
+	async function cmdInstall() {
 		const uuidSession = uuid.v4();
-		await fs.promises.copyFile(htmlFile, BackupFilePath(uuidSession));
+		await createBackup(uuidSession);
 		await performPatch(uuidSession);
 	}
 
-	function fUpdate() {
-		return fUninstallImpl(true);
+	async function cmdReinstall() {
+		await uninstallImpl();
+		await cmdInstall();
 	}
 
-	function fUninstall() {
-		return fUninstallImpl(false);
+	async function cmdUninstall() {
+		await uninstallImpl();
+		disabledRestart();
 	}
 
-	async function fUninstallImpl(willReinstall) {
-		try {
-			await fs.promises.stat(htmlFile);
-		} catch (errHtml) {
-			return vscode.window.showInformationMessage(msg.somethingWrong + errHtml);
-		}
+	async function uninstallImpl() {
 		const backupUuid = await getBackupUuid(htmlFile);
-		if (!backupUuid) {
-			await uninstallComplete(true, willReinstall);
-			return;
-		}
-
+		if (!backupUuid) return;
 		const backupPath = BackupFilePath(backupUuid);
+		await restoreBackup(backupPath);
+		await deleteBackupFiles();
+	}
+
+	// #### Backup ################################################################
+
+	async function getBackupUuid(htmlFilePath) {
 		try {
-			await fs.promises.stat(backupPath);
-			await restoreBak(backupPath, willReinstall);
+			const htmlContent = await fs.promises.readFile(htmlFilePath, "utf-8");
+			const m = htmlContent.match(
+				/<!-- !! VSCODE-CUSTOM-CSS-SESSION-ID ([0-9a-fA-F-]+) !! -->/
+			);
+			if (!m) return null;
+			else return m[1];
 		} catch (e) {
-			await uninstallComplete(true, willReinstall);
+			vscode.window.showInformationMessage(msg.somethingWrong + e);
+			throw e;
 		}
 	}
 
-	// #### Support commands ######################################################
-
-	async function getBackupUuid(fp) {
-		const htmlContent = await fs.promises.readFile(fp, "utf-8");
-		const m = htmlContent.match(/<!-- !! VSCODE-CUSTOM-CSS-SESSION-ID ([0-9a-fA-F-]+) !! -->/);
-		if (!m) return null;
-		else return m[1];
+	async function createBackup(uuidSession) {
+		try {
+			await fs.promises.copyFile(htmlFile, BackupFilePath(uuidSession));
+		} catch (e) {
+			vscode.window.showInformationMessage(msg.admin);
+			throw e;
+		}
 	}
+
+	async function restoreBackup(backupFilePath) {
+		try {
+			if (fs.existsSync(backupFilePath)) {
+				await fs.promises.unlink(htmlFile);
+				await fs.promises.copyFile(backupFilePath, htmlFile);
+			}
+		} catch (e) {
+			vscode.window.showInformationMessage(msg.admin);
+			throw e;
+		}
+	}
+
+	async function deleteBackupFiles() {
+		const htmlDir = path.dirname(htmlFile);
+		const htmlDirItems = await fs.promises.readdir(htmlDir);
+		for (const item of htmlDirItems) {
+			if (item.endsWith(".bak-custom-css")) {
+				await fs.promises.unlink(path.join(htmlDir, item));
+			}
+		}
+	}
+
+	// #### Patching ##############################################################
 
 	async function performPatch(uuidSession) {
 		const config = vscode.workspace.getConfiguration("vscode_custom_css");
@@ -163,41 +184,11 @@ function activate(context) {
 			}
 		} catch (e) {
 			vscode.window.showInformationMessage(msg.cannotLoad(url));
-			console.log(e);
+			throw e;
 		}
 	}
 	async function getIndicatorJs() {
 		return `<script src="${Url.pathToFileURL(`${__dirname}/statusbar.js`)}"></script>\n`;
-	}
-
-	async function uninstallComplete(succeeded, willReinstall) {
-		if (!succeeded) return;
-		if (willReinstall) {
-			await fInstall();
-		} else {
-			await deleteBackupFiles();
-			disabledRestart();
-		}
-	}
-
-	async function restoreBak(backupFilePath, willReinstall) {
-		try {
-			await fs.promises.unlink(htmlFile);
-		} catch (e) {
-			return vscode.window.showInformationMessage(msg.admin);
-		}
-
-		await fs.promises.copyFile(backupFilePath, htmlFile);
-		await uninstallComplete(true, willReinstall);
-	}
-	async function deleteBackupFiles() {
-		const htmlDir = path.dirname(htmlFile);
-		const htmlDirItems = await fs.promises.readdir(htmlDir);
-		for (const item of htmlDirItems) {
-			if (item.endsWith(".bak-custom-css")) {
-				await fs.promises.unlink(path.join(htmlDir, item));
-			}
-		}
 	}
 
 	function reloadWindow() {
@@ -215,14 +206,17 @@ function activate(context) {
 			.then(reloadWindow);
 	}
 
-	const installCustomCSS = vscode.commands.registerCommand("extension.installCustomCSS", () =>
-		fInstall()
+	const installCustomCSS = vscode.commands.registerCommand(
+		"extension.installCustomCSS",
+		cmdInstall
 	);
-	const uninstallCustomCSS = vscode.commands.registerCommand("extension.uninstallCustomCSS", () =>
-		fUninstall()
+	const uninstallCustomCSS = vscode.commands.registerCommand(
+		"extension.uninstallCustomCSS",
+		cmdUninstall
 	);
-	const updateCustomCSS = vscode.commands.registerCommand("extension.updateCustomCSS", () =>
-		fUpdate()
+	const updateCustomCSS = vscode.commands.registerCommand(
+		"extension.updateCustomCSS",
+		cmdReinstall
 	);
 
 	context.subscriptions.push(installCustomCSS);
