@@ -111,13 +111,12 @@ function activate(context) {
 		let html = await fs.promises.readFile(htmlFile, "utf-8");
 		html = clearExistingPatches(html);
 
-		const staging = await createStagingDir(uuidSession);
+		const staging = await createStagingDir(config, uuidSession);
 
 		const injectHTML = await patchHtml(staging, config);
 		html = html.replace(/<meta.*http-equiv="Content-Security-Policy".*>/, "");
 
-		let indicatorJS = "";
-		if (config.statusbar) indicatorJS = await getIndicatorJs();
+		let indicatorJS = await getIndicatorJs();
 
 		html = html.replace(
 			/(<\/html>)/,
@@ -147,8 +146,16 @@ function activate(context) {
 	function patchIsProperlyConfigured(config) {
 		return config && config.imports && config.imports instanceof Array;
 	}
-	async function createStagingDir(uuidSession) {
-		const stagingDirBase = path.resolve(__dirname, "../.staging-custom-css");
+	async function createStagingDir(config, uuidSession) {
+		let stagingDirBase = config.staging_dir;
+		if (!stagingDirBase) {
+			let ext = vscode.extensions.getExtension("be5invis.vscode-custom-css");
+			if (ext && ext.extensionPath) {
+				stagingDirBase = path.resolve(ext.extensionPath, ".staging-custom-css");
+			} else {
+				stagingDirBase = path.resolve(__dirname, "../.staging-custom-css");
+			}
+		}
 		await rmfr(stagingDirBase);
 		const staging = path.resolve(stagingDirBase, uuidSession);
 		await mkdirp(staging);
@@ -188,7 +195,14 @@ function activate(context) {
 		}
 	}
 	async function getIndicatorJs() {
-		return `<script src="${Url.pathToFileURL(`${__dirname}/statusbar.js`)}"></script>\n`;
+		let indicatorJsPath;
+		let ext = vscode.extensions.getExtension("be5invis.vscode-custom-css");
+		if (ext && ext.extensionPath) {
+			indicatorJsPath = path.resolve(ext.extensionPath, "src/statusbar.js");
+		} else {
+			indicatorJsPath = path.resolve(__dirname, "statusbar.js");
+		}
+		return `<script src="${Url.pathToFileURL(indicatorJsPath)}"></script>\n`;
 	}
 
 	function reloadWindow() {

@@ -1,3 +1,4 @@
+/* eslint-env browser */
 (function () {
 	function patch() {
 		const e1 = document.querySelector(".right-items");
@@ -7,7 +8,16 @@
 			e.id = "be5invis.vscode-custom-css";
 			e.title = "Custom CSS and JS";
 			e.className = "statusbar-item right __CUSTOM_CSS_JS_INDICATOR_CLS";
-			e.innerHTML = `<a tabindex="-1"><span class="codicon codicon-paintcan"></span></a>`;
+			{
+				const a = document.createElement("a");
+				a.tabIndex = -1;
+				{
+					const span = document.createElement("span");
+					span.className = "codicon codicon-paintcan";
+					a.appendChild(span);
+				}
+				e.appendChild(a);
+			}
 			e1.appendChild(e);
 		}
 	}
