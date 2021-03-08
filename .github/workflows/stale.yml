@@ -6,7 +6,7 @@ on:
 jobs:
   stale:
     runs-on: ubuntu-latest
-    if: github.repository == 'be5invis/Iosevka'
+    if: github.repository == 'be5invis/vscode-custom-css'
     steps:
       - uses: actions/stale@v3
         with:
