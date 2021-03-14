@@ -116,7 +116,8 @@ function activate(context) {
 		const injectHTML = await patchHtml(staging, config);
 		html = html.replace(/<meta.*http-equiv="Content-Security-Policy".*>/, "");
 
-		let indicatorJS = await getIndicatorJs();
+              let indicatorJS = "";
+		if (config.statusbar) indicatorJS = await getIndicatorJs();
 
 		html = html.replace(
 			/(<\/html>)/,
