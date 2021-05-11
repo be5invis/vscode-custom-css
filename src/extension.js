@@ -116,7 +116,7 @@ function activate(context) {
 		const injectHTML = await patchHtml(staging, config);
 		html = html.replace(/<meta.*http-equiv="Content-Security-Policy".*>/, "");
 
-              let indicatorJS = "";
+		let indicatorJS = "";
 		if (config.statusbar) indicatorJS = await getIndicatorJs();
 
 		html = html.replace(
@@ -191,8 +191,8 @@ function activate(context) {
 				console.log(`Unsupported extension type: ${ext}`);
 			}
 		} catch (e) {
-			vscode.window.showInformationMessage(msg.cannotLoad(url));
-			throw e;
+			vscode.window.showWarningMessage(msg.cannotLoad(url));
+			return "";
 		}
 	}
 	async function getIndicatorJs() {
