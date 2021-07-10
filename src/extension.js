@@ -2,15 +2,13 @@ const vscode = require("vscode");
 const fs = require("fs");
 const path = require("path");
 const msg = require("./messages").messages;
-const mkdirp = require("mkdirp");
 const uuid = require("uuid");
 const fetch = require("node-fetch");
 const Url = require("url");
-const rmfr = require("rmfr");
 
 function activate(context) {
 	console.log("vscode-custom-css is active!");
-
+	console.log(require.main.filename);
 	const appDir = path.dirname(require.main.filename);
 	const base = path.join(appDir, "vs", "code");
 	const htmlFile = path.join(base, "electron-browser", "workbench", "workbench.html");
@@ -111,9 +109,7 @@ function activate(context) {
 		let html = await fs.promises.readFile(htmlFile, "utf-8");
 		html = clearExistingPatches(html);
 
-		const staging = await createStagingDir(config, uuidSession);
-
-		const injectHTML = await patchHtml(staging, config);
+		const injectHTML = await patchHtml(config);
 		html = html.replace(/<meta.*http-equiv="Content-Security-Policy".*>/, "");
 
 		let indicatorJS = "";
@@ -147,30 +143,16 @@ function activate(context) {
 	function patchIsProperlyConfigured(config) {
 		return config && config.imports && config.imports instanceof Array;
 	}
-	async function createStagingDir(config, uuidSession) {
-		let stagingDirBase = config.staging_dir;
-		if (!stagingDirBase) {
-			let ext = vscode.extensions.getExtension("be5invis.vscode-custom-css");
-			if (ext && ext.extensionPath) {
-				stagingDirBase = path.resolve(ext.extensionPath, ".staging-custom-css");
-			} else {
-				stagingDirBase = path.resolve(__dirname, "../.staging-custom-css");
-			}
-		}
-		await rmfr(stagingDirBase);
-		const staging = path.resolve(stagingDirBase, uuidSession);
-		await mkdirp(staging);
-		return staging;
-	}
-	async function patchHtml(staging, config) {
+
+	async function patchHtml(config) {
 		let res = "";
 		for (const item of config.imports) {
-			const imp = await patchHtmlForItem(staging, item);
+			const imp = await patchHtmlForItem(item);
 			if (imp) res += imp;
 		}
 		return res;
 	}
-	async function patchHtmlForItem(staging, url) {
+	async function patchHtmlForItem(url) {
 		if (!url) return "";
 		if (typeof url !== "string") return "";
 
@@ -178,15 +160,12 @@ function activate(context) {
 		let parsed = new Url.URL(url);
 		const ext = path.extname(parsed.pathname);
 
-		const uuidFile = uuid.v4();
 		try {
 			const fetched = await getContent(url);
-			const tempPath = path.resolve(staging, uuidFile + ext);
-			await fs.promises.writeFile(tempPath, fetched);
 			if (ext === ".css") {
-				return `<link rel="stylesheet" href="${Url.pathToFileURL(tempPath)}"/>\n`;
+				return `<style>${fetched}</style>`;
 			} else if (ext === ".js") {
-				return `<script src="${Url.pathToFileURL(tempPath)}"></script>\n`;
+				return `<script>${fetched}</script>`;
 			} else {
 				console.log(`Unsupported extension type: ${ext}`);
 			}
@@ -203,7 +182,8 @@ function activate(context) {
 		} else {
 			indicatorJsPath = path.resolve(__dirname, "statusbar.js");
 		}
-		return `<script src="${Url.pathToFileURL(indicatorJsPath)}"></script>\n`;
+		const indicatorJsContent = await fs.promises.readFile(indicatorJsPath, "utf-8");
+		return `<script>${indicatorJsContent}</script>`;
 	}
 
 	function reloadWindow() {

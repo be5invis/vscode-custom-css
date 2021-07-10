@@ -3,7 +3,7 @@
 ### **SPECIAL NOTE: If Visual Studio Code complains about that it is corrupted, simply click “Don't show again”.**
 ### **NOTE: Every time after Visual Studio Code is updated, please re-enable Custom CSS.**
 ### **NOTE: Every time you change the configuration, please re-enable Custom CSS.**
-### **Starting from extension version 5.0, to be compatible with VSCode 1.54, the CSS/JS files being applied will be copied into a staging directory inside the extension's installation. Please make sure that the extension is not symlinked, in order to make Code able to load your CSS or JS.**
+### **Starting from extension version 6.0, to be compatible with VSCode 1.58, the CSS/JS files being applied will be inlined into VSCode's workbench.**
 
 Custom CSS to your Visual Studio Code. Based on [robertohuertasm](https://github.com/robertohuertasm)’s [vscode-icons](https://github.com/robertohuertasm/vscode-icons).
 
