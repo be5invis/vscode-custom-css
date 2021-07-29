@@ -69,7 +69,9 @@ function activate(context) {
 
 	async function createBackup(uuidSession) {
 		try {
-			await fs.promises.copyFile(htmlFile, BackupFilePath(uuidSession));
+			let html = await fs.promises.readFile(htmlFile, "utf-8");
+			html = clearExistingPatches(html);
+			await fs.promises.writeFile(BackupFilePath(uuidSession), html, "utf-8");
 		} catch (e) {
 			vscode.window.showInformationMessage(msg.admin);
 			throw e;
