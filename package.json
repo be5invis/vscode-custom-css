@@ -1,13 +1,13 @@
 {
-	"name": "vscode-custom-css",
-	"displayName": "Custom CSS and JS Loader",
-	"description": "Custom CSS and JS for Visual Studio Code",
-	"version": "6.0.1",
-	"publisher": "be5invis",
+	"name": "clickable-button-hints",
+	"displayName": "Clickable Button Hints",
+	"description": "Clickable button hints for Visual Studio Code",
+	"version": "1.0.0",
+	"publisher": "tusharsadhwani",
 	"author": {
-		"email": "belleve@typeof.net",
-		"name": "Belleve Invis",
-		"url": "https://typeof.net"
+		"email": "tushar.sadhwani000@gmail.com",
+		"name": "Tushar Sadhwani",
+		"url": "https://tusharsadhwani.dev"
 	},
 	"engines": {
 		"vscode": "^1.28.0"
@@ -18,10 +18,10 @@
 	],
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/be5invis/vscode-custom-css"
+		"url": "https://github.com/tusharsadhwani/clickable-button-hints"
 	},
 	"bugs": {
-		"url": "https://github.com/be5invis/vscode-custom-css/issues"
+		"url": "https://github.com/tusharsadhwani/clickable-button-hints/issues"
 	},
 	"preview": true,
 	"icon": "images/logo.png",
@@ -35,38 +35,18 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "extension.installCustomCSS",
-				"title": "Enable Custom CSS and JS"
+				"command": "extension.installClickableButtonHints",
+				"title": "Enable clickable button hints"
 			},
 			{
-				"command": "extension.uninstallCustomCSS",
-				"title": "Disable Custom CSS and JS"
+				"command": "extension.uninstallClickableButtonHints",
+				"title": "Disable clickable button hints"
 			},
 			{
-				"command": "extension.updateCustomCSS",
-				"title": "Reload Custom CSS and JS"
+				"command": "extension.updateClickableButtonHints",
+				"title": "Reload clickable button hints"
 			}
-		],
-		"configuration": {
-			"title": "Custom CSS/JS Configuration",
-			"properties": {
-				"vscode_custom_css.imports": {
-					"description": "Custom CSS/JS files, as an array of URLs, not file paths",
-					"type": "array",
-					"default": []
-				},
-				"vscode_custom_css.statusbar": {
-					"description": "Enable Status Indicator",
-					"type": "boolean",
-					"default": true
-				},
-				"vscode_custom_css.staging_dir": {
-					"description": "Directory used for storing staged CSS/JS files. Must be inside VSCode's extension directory, otherwise VSCode will refuse to load the your custom CSS/JS.",
-					"type": "string",
-					"default": ""
-				}
-			}
-		}
+		]
 	},
 	"devDependencies": {
 		"eslint": "^7.21.0",

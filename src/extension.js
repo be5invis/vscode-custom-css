@@ -6,8 +6,20 @@ const uuid = require("uuid");
 const fetch = require("node-fetch");
 const Url = require("url");
 
+const clickableButtonCSS = `
+.monaco-workbench .part.editor.has-watermark > .content.empty > .watermark {
+  z-index: 1;
+}
+.monaco-keybinding > .monaco-keybinding-key {
+  position: relative;
+}
+.monaco-keybinding > .monaco-keybinding-key:active {
+  top: 0.2em;
+}
+`;
+
 function activate(context) {
-	console.log("vscode-custom-css is active!");
+	console.log("clickable-button-hints is active!");
 	console.log(require.main.filename);
 	const appDir = path.dirname(require.main.filename);
 	const base = path.join(appDir, "vs", "code");
@@ -57,7 +69,7 @@ function activate(context) {
 		try {
 			const htmlContent = await fs.promises.readFile(htmlFilePath, "utf-8");
 			const m = htmlContent.match(
-				/<!-- !! VSCODE-CUSTOM-CSS-SESSION-ID ([0-9a-fA-F-]+) !! -->/
+				/<!-- !! CLICKABLE-BUTTON-HINTS-SESSION-ID ([0-9a-fA-F-]+) !! -->/
 			);
 			if (!m) return null;
 			else return m[1];
@@ -103,27 +115,17 @@ function activate(context) {
 	// #### Patching ##############################################################
 
 	async function performPatch(uuidSession) {
-		const config = vscode.workspace.getConfiguration("vscode_custom_css");
-		if (!patchIsProperlyConfigured(config)) {
-			return vscode.window.showInformationMessage(msg.notConfigured);
-		}
-
 		let html = await fs.promises.readFile(htmlFile, "utf-8");
 		html = clearExistingPatches(html);
 
-		const injectHTML = await patchHtml(config);
 		html = html.replace(/<meta.*http-equiv="Content-Security-Policy".*>/, "");
-
-		let indicatorJS = "";
-		if (config.statusbar) indicatorJS = await getIndicatorJs();
 
 		html = html.replace(
 			/(<\/html>)/,
-			`<!-- !! VSCODE-CUSTOM-CSS-SESSION-ID ${uuidSession} !! -->\n` +
-				"<!-- !! VSCODE-CUSTOM-CSS-START !! -->\n" +
-				indicatorJS +
-				injectHTML +
-				"<!-- !! VSCODE-CUSTOM-CSS-END !! -->\n</html>"
+			`<!-- !! CLICKABLE-BUTTON-HINTS-SESSION-ID ${uuidSession} !! -->\n` +
+				"<!-- !! CLICKABLE-BUTTON-HINTS-START !! -->\n" +
+				`<style>${clickableButtonCSS}</style>` +
+				"<!-- !! CLICKABLE-BUTTON-HINTS-END !! -->\n</html>"
 		);
 		try {
 			await fs.promises.writeFile(htmlFile, html, "utf-8");
@@ -135,57 +137,11 @@ function activate(context) {
 	}
 	function clearExistingPatches(html) {
 		html = html.replace(
-			/<!-- !! VSCODE-CUSTOM-CSS-START !! -->[\s\S]*?<!-- !! VSCODE-CUSTOM-CSS-END !! -->\n*/,
+			/<!-- !! CLICKABLE-BUTTON-HINTS-START !! -->[\s\S]*?<!-- !! CLICKABLE-BUTTON-HINTS-END !! -->\n*/,
 			""
 		);
-		html = html.replace(/<!-- !! VSCODE-CUSTOM-CSS-SESSION-ID [\w-]+ !! -->\n*/g, "");
+		html = html.replace(/<!-- !! CLICKABLE-BUTTON-HINTS-SESSION-ID [\w-]+ !! -->\n*/g, "");
 		return html;
-	}
-
-	function patchIsProperlyConfigured(config) {
-		return config && config.imports && config.imports instanceof Array;
-	}
-
-	async function patchHtml(config) {
-		let res = "";
-		for (const item of config.imports) {
-			const imp = await patchHtmlForItem(item);
-			if (imp) res += imp;
-		}
-		return res;
-	}
-	async function patchHtmlForItem(url) {
-		if (!url) return "";
-		if (typeof url !== "string") return "";
-
-		// Copy the resource to a staging directory inside the extension dir
-		let parsed = new Url.URL(url);
-		const ext = path.extname(parsed.pathname);
-
-		try {
-			const fetched = await getContent(url);
-			if (ext === ".css") {
-				return `<style>${fetched}</style>`;
-			} else if (ext === ".js") {
-				return `<script>${fetched}</script>`;
-			} else {
-				console.log(`Unsupported extension type: ${ext}`);
-			}
-		} catch (e) {
-			vscode.window.showWarningMessage(msg.cannotLoad(url));
-			return "";
-		}
-	}
-	async function getIndicatorJs() {
-		let indicatorJsPath;
-		let ext = vscode.extensions.getExtension("be5invis.vscode-custom-css");
-		if (ext && ext.extensionPath) {
-			indicatorJsPath = path.resolve(ext.extensionPath, "src/statusbar.js");
-		} else {
-			indicatorJsPath = path.resolve(__dirname, "statusbar.js");
-		}
-		const indicatorJsContent = await fs.promises.readFile(indicatorJsPath, "utf-8");
-		return `<script>${indicatorJsContent}</script>`;
 	}
 
 	function reloadWindow() {
@@ -203,22 +159,22 @@ function activate(context) {
 			.then(reloadWindow);
 	}
 
-	const installCustomCSS = vscode.commands.registerCommand(
-		"extension.installCustomCSS",
+	const installClickableButtonHints = vscode.commands.registerCommand(
+		"extension.installClickableButtonHints",
 		cmdInstall
 	);
-	const uninstallCustomCSS = vscode.commands.registerCommand(
-		"extension.uninstallCustomCSS",
+	const uninstallClickableButtonHints = vscode.commands.registerCommand(
+		"extension.uninstallClickableButtonHints",
 		cmdUninstall
 	);
-	const updateCustomCSS = vscode.commands.registerCommand(
-		"extension.updateCustomCSS",
+	const updateClickableButtonHints = vscode.commands.registerCommand(
+		"extension.updateClickableButtonHints",
 		cmdReinstall
 	);
 
-	context.subscriptions.push(installCustomCSS);
-	context.subscriptions.push(uninstallCustomCSS);
-	context.subscriptions.push(updateCustomCSS);
+	context.subscriptions.push(installClickableButtonHints);
+	context.subscriptions.push(uninstallClickableButtonHints);
+	context.subscriptions.push(updateClickableButtonHints);
 }
 exports.activate = activate;
 
