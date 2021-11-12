@@ -51,7 +51,7 @@ As you know to access the command palette and introduce commands you can use ***
 **In Windows, make sure you run your Visual Studio Code in Administrator mode before enabling or disabling your custom style!**
 
 ## Mac and Linux users
-**The extension would NOT if Visual Studio Code cannot modify itself.** The cases include:
+**The extension would NOT work if Visual Studio Code cannot modify itself.** The cases include:
 
 - Code files being read-only, like on a read-only file system or,
 - Code is not started with the permissions to modify itself.
