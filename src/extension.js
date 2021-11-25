@@ -172,6 +172,7 @@ function activate(context) {
 				console.log(`Unsupported extension type: ${ext}`);
 			}
 		} catch (e) {
+			console.error(e);
 			vscode.window.showWarningMessage(msg.cannotLoad(url));
 			return "";
 		}
