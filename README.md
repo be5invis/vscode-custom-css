@@ -60,6 +60,7 @@ As you know to access the command palette and introduce commands you can use ***
 
 ```sh
 sudo chown -R $(whoami) $(which code)
+sudo chown -R $(whoami) /usr/share/code
 ```
 
 The placeholder `<Path to Visual Studio Code>` means the path to VSCode installation. It is typically:
