@@ -59,7 +59,8 @@ As you know to access the command palette and introduce commands you can use ***
 **You need to claim ownership on Visual Studio Code's installation directory, by running this command**:
 
 ```sh
-sudo chown -R $(whoami) <Path to Code>
+sudo chown -R $(whoami) $(which code)
+sudo chown -R $(whoami) /usr/share/code
 ```
 
 The placeholder `<Path to Visual Studio Code>` means the path to VSCode installation. It is typically:
