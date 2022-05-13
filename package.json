@@ -55,6 +55,12 @@
 					"type": "array",
 					"default": []
 				},
+				"vscode_custom_css.code": {
+					"markdownDescription": "inject html code, example: `<script>{}</script><style>*{}</style>`",
+					"type": "string",
+					"editPresentation": "multilineText",
+					"default": ""
+				},
 				"vscode_custom_css.statusbar": {
 					"description": "Enable Status Indicator",
 					"type": "boolean",

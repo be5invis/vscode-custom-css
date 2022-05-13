@@ -1,8 +1,8 @@
 # Custom CSS and JS
 
-### **SPECIAL NOTE: If Visual Studio Code complains about that it is corrupted, simply click “Don't show again”.**
-### **NOTE: Every time after Visual Studio Code is updated, please re-enable Custom CSS.**
-### **NOTE: Every time you change the configuration, please re-enable Custom CSS.**
+- **SPECIAL NOTE**: If Visual Studio Code complains about that it is corrupted, simply click “Don't show again”.**
+- **NOTE**: Every time after Visual Studio Code is updated, please re-enable Custom CSS.**
+- **NOTE**: Every time you change the configuration, please re-enable Custom CSS.**
 ### **Starting from extension version 6.0, to be compatible with VSCode 1.58, the CSS/JS files being applied will be inlined into VSCode's workbench.**
 
 Custom CSS to your Visual Studio Code. Based on [robertohuertasm](https://github.com/robertohuertasm)’s [vscode-icons](https://github.com/robertohuertasm/vscode-icons).
@@ -14,10 +14,10 @@ Custom CSS to your Visual Studio Code. Based on [robertohuertasm](https://github
 1. Install this extension.
 
 2. Add to `settings.json`:
-
-   ```json
-       "vscode_custom_css.imports": [""]
-   ```
+   - vscode_custom_css.code
+      inject html code, example: `<script>{}</script><style>*{}</style>`
+   - vscode_custom_css.imports
+      Custom CSS/JS files, as an array of URLs, not file paths
 
    **VERY IMPORTANT**: Items in `vscode_custom_css.imports` must be **URL**s. Plain file paths are **NOT URLs**.
 

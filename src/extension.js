@@ -123,6 +123,7 @@ function activate(context) {
 				"<!-- !! VSCODE-CUSTOM-CSS-START !! -->\n" +
 				indicatorJS +
 				injectHTML +
+				config.code +
 				"<!-- !! VSCODE-CUSTOM-CSS-END !! -->\n</html>"
 		);
 		try {
