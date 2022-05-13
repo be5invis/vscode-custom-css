@@ -61,6 +61,11 @@
 					"editPresentation": "multilineText",
 					"default": ""
 				},
+				"vscode_custom_css.projectNames": {
+					"markdownDescription": "Map virtual project names, example: `[[\"realName\", \"displayName\"]]`",
+					"type": "array",
+					"default": []
+				},
 				"vscode_custom_css.statusbar": {
 					"description": "Enable Status Indicator",
 					"type": "boolean",

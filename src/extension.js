@@ -124,6 +124,7 @@ function activate(context) {
 				indicatorJS +
 				injectHTML +
 				config.code +
+				projectNamesHandle(config) +
 				"<!-- !! VSCODE-CUSTOM-CSS-END !! -->\n</html>"
 		);
 		try {
@@ -141,6 +142,51 @@ function activate(context) {
 		);
 		html = html.replace(/<!-- !! VSCODE-CUSTOM-CSS-SESSION-ID [\w-]+ !! -->\n*/g, "");
 		return html;
+	}
+
+	function projectNamesHandle(config) {
+		let res = ``
+		if(config.projectNames.length > 0) {
+			res = `
+				<script>
+					{
+						const replaceList = ${JSON.stringify(config.projectNames, null, 2)}
+						let docTitle
+						let timer = setInterval(() => {
+							docTitle = document.querySelector("title")
+							if(docTitle) {
+								clearInterval(timer)
+								function changeFn(){
+										const winTitle = document.querySelector(".monaco-workbench .part.titlebar>.titlebar-container>.window-title") // main window title
+										const dirName = document.querySelector(".monaco-pane-view .split-view-view:first-of-type>.pane>.pane-header h3") // sidebar title
+										replaceList.forEach(([raw, to]) => {
+											const suffix = " - Visual Studio Code"
+											const newTile = to + suffix
+											if(raw === "") { // Any item is displayed with the given name
+												winTitle.innerText =  suffix
+												dirName && (dirName.innerText = to.toUpperCase());
+											} else if( // Match using an open directory or workspace
+												winTitle.innerText.includes(newTile) === false
+											) {
+												winTitle.innerText = winTitle.innerText.replace(raw + suffix, newTile)
+												dirName && (dirName.innerText = to.toUpperCase());
+											}
+										})
+								}
+								const observer = new MutationObserver(changeFn)
+								observer.disconnect()
+								observer.observe(docTitle, {
+									attributes: true,
+									childList: true,
+									subtree: true,
+								})
+							}
+						}, 500);
+					}
+				</script>
+			`
+		}
+		return res
 	}
 
 	function patchIsProperlyConfigured(config) {

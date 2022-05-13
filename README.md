@@ -16,6 +16,8 @@ Custom CSS to your Visual Studio Code. Based on [robertohuertasm](https://github
 2. Add to `settings.json`:
    - vscode_custom_css.code
       inject html code, example: `<script>{}</script><style>*{}</style>`
+   - vscode_custom_css.projectNames
+      Map virtual project names, example: `[["realName", "displayName"]]`
    - vscode_custom_css.imports
       Custom CSS/JS files, as an array of URLs, not file paths
 
