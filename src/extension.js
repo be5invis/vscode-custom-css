@@ -7,8 +7,6 @@ const fetch = require("node-fetch");
 const Url = require("url");
 
 function activate(context) {
-	console.log("vscode-custom-css is active!");
-	console.log(require.main.filename);
 	const appDir = path.dirname(require.main.filename);
 	const base = path.join(appDir, "vs", "code");
 	const htmlFile = path.join(base, "electron-sandbox", "workbench", "workbench.html");
@@ -220,6 +218,10 @@ function activate(context) {
 	context.subscriptions.push(installCustomCSS);
 	context.subscriptions.push(uninstallCustomCSS);
 	context.subscriptions.push(updateCustomCSS);
+
+	console.log("vscode-custom-css is active!");
+	console.log("Application directory", appDir);
+	console.log("Main HTML file", htmlFile);
 }
 exports.activate = activate;
 
