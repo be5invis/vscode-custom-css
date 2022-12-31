@@ -166,6 +166,8 @@ function activate(context) {
 				return `<style>${fetched}</style>`;
 			} else if (ext === ".js") {
 				return `<script>${fetched}</script>`;
+			} else if (ext === ".html") {
+				return `${fetched}`;
 			} else {
 				console.log(`Unsupported extension type: ${ext}`);
 			}
