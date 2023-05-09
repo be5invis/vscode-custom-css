@@ -110,7 +110,7 @@ function activate(context) {
 		html = clearExistingPatches(html);
 
 		const injectHTML = await patchHtml(config);
-		html = html.replace(/<meta\s+http-equiv="Content-Security-Policy"[\s\S]*\/>/, "");
+		html = html.replace(/<meta\s+http-equiv="Content-Security-Policy"[\s\S]*?\/>/, "");
 
 		let indicatorJS = "";
 		if (config.statusbar) indicatorJS = await getIndicatorJs();
