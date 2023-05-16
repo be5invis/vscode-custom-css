@@ -11,6 +11,7 @@
 			{
 				const a = document.createElement("a");
 				a.tabIndex = -1;
+				a.className = 'statusbar-item-label';
 				{
 					const span = document.createElement("span");
 					span.className = "codicon codicon-paintcan";
