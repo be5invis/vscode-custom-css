@@ -59,11 +59,6 @@
 					"description": "Enable Status Indicator",
 					"type": "boolean",
 					"default": true
-				},
-				"vscode_custom_css.staging_dir": {
-					"description": "Directory used for storing staged CSS/JS files. Must be inside VSCode's extension directory, otherwise VSCode will refuse to load the your custom CSS/JS.",
-					"type": "string",
-					"default": ""
 				}
 			}
 		}
