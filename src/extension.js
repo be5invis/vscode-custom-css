@@ -7,9 +7,14 @@ const fetch = require("node-fetch");
 const Url = require("url");
 
 function activate(context) {
-	const appDir = path.dirname(require.main.filename);
+	const appDir = require.main
+		? path.dirname(require.main.filename)
+		: globalThis._VSCODE_FILE_ROOT;
 	const base = path.join(appDir, "vs", "code");
-	const htmlFile = path.join(base, "electron-sandbox", "workbench", "workbench.html");
+	let htmlFile = path.join(base, "electron-sandbox", "workbench", "workbench.html");
+	if (!fs.existsSync(htmlFile)) {
+		htmlFile = path.join(base, "electron-sandbox", "workbench", "workbench.esm.html");
+	}
 	const BackupFilePath = uuid =>
 		path.join(base, "electron-sandbox", "workbench", `workbench.${uuid}.bak-custom-css`);
 
