@@ -7,7 +7,7 @@ const fetch = require("node-fetch");
 const Url = require("url");
 
 function activate(context) {
-	const hasMain = "main"  in require;
+	const hasMain = "main" in require;
 	const appDir = hasMain ? path.dirname(require.main.filename) : globalThis._VSCODE_FILE_ROOT;
 	const base = path.join(appDir, "vs", "code");
 	let htmlFile = path.join(base, "electron-sandbox", "workbench", "workbench.html");
