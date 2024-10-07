@@ -10,10 +10,17 @@ function activate(context) {
 	const appDir = require.main
 		? path.dirname(require.main.filename)
 		: globalThis._VSCODE_FILE_ROOT;
+	if (!appDir) {
+		vscode.window.showInformationMessage(msg.unableToLocateVsCodeInstallationPath);
+	}
+
 	const base = path.join(appDir, "vs", "code");
 	let htmlFile = path.join(base, "electron-sandbox", "workbench", "workbench.html");
 	if (!fs.existsSync(htmlFile)) {
 		htmlFile = path.join(base, "electron-sandbox", "workbench", "workbench.esm.html");
+	}
+	if (!fs.existsSync(htmlFile)) {
+		vscode.window.showInformationMessage(msg.unableToLocateVsCodeInstallationPath);
 	}
 	const BackupFilePath = uuid =>
 		path.join(base, "electron-sandbox", "workbench", `workbench.${uuid}.bak-custom-css`);

@@ -14,5 +14,7 @@ exports.messages = {
 		'Please set "vscode_custom_css.imports" in your user settings.',
 	reloadAfterVersionUpgrade:
 		"Detected reloading CSS / JS after VSCode is upgraded. " + "Performing application only.",
+	unableToLocateVsCodeInstallationPath:
+		"Unable to locate the installation path of VSCode. This extension may not function correctly.",
 	cannotLoad: url => `Cannot load '${url}'. Skipping.`
 };
