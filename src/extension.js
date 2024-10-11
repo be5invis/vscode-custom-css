@@ -39,7 +39,7 @@ function activate(context) {
 
 		if (key.startsWith('env:')) {
 			const [_, envKey, optionalDefault] = key.split(':');
-			return process.env[envKey] ?? optionalDefault;
+			return process.env[envKey] ?? optionalDefault ?? '';
 		}
 	}
 
