@@ -72,6 +72,24 @@ The placeholder `<Path to Visual Studio Code>` means the path to VSCode installa
 
 Mac and Linux package managers may have customized installation path. Please double check your path is correct.
 
+## Variables
+
+File URIs support VSCode variables like: `${userHome}`. It just replaces supported variables with their values before parsing into a file path. Supported variables are:
+
+- `${cwd}`
+- `${userHome}`
+- `${execPath}`
+- `${pathSeparator}`, `${/}`
+
+It also supports env variables like `${env:ENV_VAR_NAME}` and you can specify a fallback value like `${env:ENV_VAR:defaultvalue}`
+
+
+### Example
+
+```json
+"vscode_custom_css.imports": ["file://${userHome}/.config/vscode-styles.css"]
+```
+
 # Disclaimer
 
 This extension modifies some Visual Studio Code files so use it at your own risk.
