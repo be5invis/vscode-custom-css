@@ -47,7 +47,7 @@ function activate(context) {
 		if (/^file:/.test(url)) {
 			// regex matches any "${<RESOLVE>}" and replaces with resolveVariable(<RESOLVE>)
 			// eg:  "HELLO ${userHome} WORLD" -> "HELLO /home/username WORLD"
-			const resolved = url.replaceAll(/\$\{([^\{\}]+)\}/g, (_, key) => resolveVariable(key) ?? key);
+			const resolved = url.replaceAll(/\$\{([^\{\}]+)\}/g, (substr, key) => resolveVariable(key) ?? substr);
 			const fp = Url.fileURLToPath(resolved);
 
 			return await fs.promises.readFile(fp);
