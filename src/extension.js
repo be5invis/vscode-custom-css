@@ -1,5 +1,6 @@
 const vscode = require("vscode");
 const fs = require("fs");
+const os = require("os");
 const path = require("path");
 const msg = require("./messages").messages;
 const uuid = require("uuid");
@@ -25,9 +26,30 @@ function activate(context) {
 	const BackupFilePath = uuid =>
 		path.join(base, "electron-sandbox", "workbench", `workbench.${uuid}.bak-custom-css`);
 
+	function resolveVariable(key) {
+		const variables = {
+			cwd: () => process.cwd(),
+			userHome: () => os.homedir(),
+			execPath: () => process.env.VSCODE_EXEC_PATH ?? process.execPath,
+			pathSeparator: () => path.sep,
+			"/": () => path.sep,
+		};
+
+		if (key in variables) return variables[key]();
+
+		if (key.startsWith('env:')) {
+			const [_, envKey, optionalDefault] = key.split(':');
+			return process.env[envKey] ?? optionalDefault ?? '';
+		}
+	}
+
 	async function getContent(url) {
 		if (/^file:/.test(url)) {
-			const fp = Url.fileURLToPath(url);
+			// regex matches any "${<RESOLVE>}" and replaces with resolveVariable(<RESOLVE>)
+			// eg:  "HELLO ${userHome} WORLD" -> "HELLO /home/username WORLD"
+			const resolved = url.replaceAll(/\$\{([^\{\}]+)\}/g, (substr, key) => resolveVariable(key) ?? substr);
+			const fp = Url.fileURLToPath(resolved);
+
 			return await fs.promises.readFile(fp);
 		} else {
 			const response = await fetch(url);
