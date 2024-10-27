@@ -42,15 +42,20 @@ function activate(context) {
 			return process.env[envKey] ?? optionalDefault ?? '';
 		}
 	}
-
-	async function getContent(url) {
+	function parsedUrl(url) {
 		if (/^file:/.test(url)) {
 			// regex matches any "${<RESOLVE>}" and replaces with resolveVariable(<RESOLVE>)
 			// eg:  "HELLO ${userHome} WORLD" -> "HELLO /home/username WORLD"
 			const resolved = url.replaceAll(/\$\{([^\{\}]+)\}/g, (substr, key) => resolveVariable(key) ?? substr);
-			const fp = Url.fileURLToPath(resolved);
+			return Url.fileURLToPath(resolved);
+		} else {
+			return url
+		}
+	}
 
-			return await fs.promises.readFile(fp);
+	async function getContent(url) {
+		if (/^file:/.test(url.toString())) {
+			return await fs.promises.readFile(url);
 		} else {
 			const response = await fetch(url);
 			return response.buffer();
@@ -162,6 +167,7 @@ function activate(context) {
 		} catch (e) {
 			vscode.window.showInformationMessage(msg.admin);
 			disabledRestart();
+			return
 		}
 		enabledRestart();
 	}
@@ -195,17 +201,17 @@ function activate(context) {
 		const ext = path.extname(parsed.pathname);
 
 		try {
-			const fetched = await getContent(url);
+			parsed = parsedUrl(url)
+			const fetched = await getContent(parsed);
 			if (ext === ".css") {
 				return `<style>${fetched}</style>`;
 			} else if (ext === ".js") {
 				return `<script>${fetched}</script>`;
-			} else {
-				console.log(`Unsupported extension type: ${ext}`);
 			}
+			throw new Error(`Unsupported extension type: ${ext}`);
 		} catch (e) {
 			console.error(e);
-			vscode.window.showWarningMessage(msg.cannotLoad(url));
+			vscode.window.showWarningMessage(msg.cannotLoad(parsed.toString()));
 			return "";
 		}
 	}
@@ -227,13 +233,22 @@ function activate(context) {
 	}
 	function enabledRestart() {
 		vscode.window
-			.showInformationMessage(msg.enabled, { title: msg.restartIde })
-			.then(reloadWindow);
+			.showInformationMessage(msg.enabled, msg.restartIde)
+			.then((btn) => {
+				// if close button is clicked btn is undefined, so no reload window
+				if (btn === msg.restartIde) {
+					reloadWindow()
+				}
+			})
 	}
 	function disabledRestart() {
 		vscode.window
-			.showInformationMessage(msg.disabled, { title: msg.restartIde })
-			.then(reloadWindow);
+			.showInformationMessage(msg.disabled, msg.restartIde)
+			.then((btn) => {
+				if (btn === msg.restartIde) {
+					reloadWindow()
+				}
+			})
 	}
 
 	const installCustomCSS = vscode.commands.registerCommand(
