@@ -162,6 +162,7 @@ function activate(context) {
 		} catch (e) {
 			vscode.window.showInformationMessage(msg.admin);
 			disabledRestart();
+			return
 		}
 		enabledRestart();
 	}
@@ -227,13 +228,22 @@ function activate(context) {
 	}
 	function enabledRestart() {
 		vscode.window
-			.showInformationMessage(msg.enabled, { title: msg.restartIde })
-			.then(reloadWindow);
+			.showInformationMessage(msg.enabled, msg.restartIde)
+			.then((btn) => {
+				// if close button is clicked btn is undefined, so no reload window
+				if (btn === msg.restartIde) {
+					reloadWindow()
+				}
+			})
 	}
 	function disabledRestart() {
 		vscode.window
-			.showInformationMessage(msg.disabled, { title: msg.restartIde })
-			.then(reloadWindow);
+			.showInformationMessage(msg.disabled, msg.restartIde)
+			.then((btn) => {
+				if (btn === msg.restartIde) {
+					reloadWindow()
+				}
+			})
 	}
 
 	const installCustomCSS = vscode.commands.registerCommand(
