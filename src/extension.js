@@ -17,6 +17,10 @@ function activate(context) {
 
 	const base = path.join(appDir, "vs", "code");
 	let htmlFile = path.join(base, "electron-sandbox", "workbench", "workbench.html");
+	// support Cursor IDE
+	if (!fs.existsSync(htmlFile)) {
+		htmlFile = path.join(base, "electron-sandbox", "workbench", "workbench-apc-extension.html");
+	}
 	if (!fs.existsSync(htmlFile)) {
 		htmlFile = path.join(base, "electron-sandbox", "workbench", "workbench.esm.html");
 	}
