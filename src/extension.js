@@ -36,30 +36,33 @@ function activate(context) {
 			userHome: () => os.homedir(),
 			execPath: () => process.env.VSCODE_EXEC_PATH ?? process.execPath,
 			pathSeparator: () => path.sep,
-			"/": () => path.sep,
+			"/": () => path.sep
 		};
 
 		if (key in variables) return variables[key]();
 
-		if (key.startsWith('env:')) {
-			const [_, envKey, optionalDefault] = key.split(':');
-			return process.env[envKey] ?? optionalDefault ?? '';
+		if (key.startsWith("env:")) {
+			const [_, envKey, optionalDefault] = key.split(":");
+			return process.env[envKey] ?? optionalDefault ?? "";
 		}
 	}
 	function parsedUrl(url) {
 		if (/^file:/.test(url)) {
 			// regex matches any "${<RESOLVE>}" and replaces with resolveVariable(<RESOLVE>)
 			// eg:  "HELLO ${userHome} WORLD" -> "HELLO /home/username WORLD"
-			const resolved = url.replaceAll(/\$\{([^\{\}]+)\}/g, (substr, key) => resolveVariable(key) ?? substr);
-			return Url.fileURLToPath(resolved);
+			return url.replaceAll(
+				/\$\{([^\{\}]+)\}/g,
+				(substr, key) => resolveVariable(key) ?? substr
+			);
 		} else {
-			return url
+			return url;
 		}
 	}
 
 	async function getContent(url) {
 		if (/^file:/.test(url.toString())) {
-			return await fs.promises.readFile(url);
+			const fp = Url.fileURLToPath(url);
+			return await fs.promises.readFile(fp);
 		} else {
 			const response = await fetch(url);
 			return response.buffer();
@@ -171,7 +174,7 @@ function activate(context) {
 		} catch (e) {
 			vscode.window.showInformationMessage(msg.admin);
 			disabledRestart();
-			return
+			return;
 		}
 		enabledRestart();
 	}
@@ -205,7 +208,7 @@ function activate(context) {
 		const ext = path.extname(parsed.pathname);
 
 		try {
-			parsed = parsedUrl(url)
+			parsed = parsedUrl(url);
 			const fetched = await getContent(parsed);
 			if (ext === ".css") {
 				return `<style>${fetched}</style>`;
@@ -236,23 +239,19 @@ function activate(context) {
 		vscode.commands.executeCommand("workbench.action.reloadWindow");
 	}
 	function enabledRestart() {
-		vscode.window
-			.showInformationMessage(msg.enabled, msg.restartIde)
-			.then((btn) => {
-				// if close button is clicked btn is undefined, so no reload window
-				if (btn === msg.restartIde) {
-					reloadWindow()
-				}
-			})
+		vscode.window.showInformationMessage(msg.enabled, msg.restartIde).then(btn => {
+			// if close button is clicked btn is undefined, so no reload window
+			if (btn === msg.restartIde) {
+				reloadWindow();
+			}
+		});
 	}
 	function disabledRestart() {
-		vscode.window
-			.showInformationMessage(msg.disabled, msg.restartIde)
-			.then((btn) => {
-				if (btn === msg.restartIde) {
-					reloadWindow()
-				}
-			})
+		vscode.window.showInformationMessage(msg.disabled, msg.restartIde).then(btn => {
+			if (btn === msg.restartIde) {
+				reloadWindow();
+			}
+		});
 	}
 
 	const installCustomCSS = vscode.commands.registerCommand(
