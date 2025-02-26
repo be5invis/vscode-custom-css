@@ -1,6 +1,6 @@
 # Custom CSS and JS
 
-### **SPECIAL NOTE: If Visual Studio Code complains about that it is corrupted, simply click “Don't show again”.**
+### **SPECIAL NOTE: If Visual Studio Code complains about that it is corrupted, simply click “Don't show again” or install [Fix VSCode Checksums Next](https://marketplace.visualstudio.com/items?itemName=RimuruChan.vscode-fix-checksums-next).**
 ### **NOTE: Every time after Visual Studio Code is updated, please re-enable Custom CSS.**
 ### **NOTE: Every time you change the configuration, please re-enable Custom CSS.**
 ### **Starting from extension version 6.0, to be compatible with VSCode 1.58, the CSS/JS files being applied will be inlined into VSCode's workbench.**
