@@ -24,6 +24,7 @@ function activate(context) {
 	}
 	if (!fs.existsSync(workbenchFolder)) {
 		vscode.window.showInformationMessage(msg.unableToLocateVsCodeInstallationPath);
+		return;
 	}
 
 	let htmlFile = path.join(workbenchFolder, "workbench.html");
@@ -37,6 +38,7 @@ function activate(context) {
 
 	if (!fs.existsSync(htmlFile)) {
 		vscode.window.showInformationMessage(msg.unableToLocateVsCodeInstallationPath);
+		return;
 	}
 	const BackupFilePath = uuid =>
 		path.join(workbenchFolder, `workbench.${uuid}.bak-custom-css`);
