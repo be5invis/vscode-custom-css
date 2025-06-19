@@ -16,19 +16,32 @@ function activate(context) {
 	}
 
 	const base = path.join(appDir, "vs", "code");
-	let htmlFile = path.join(base, "electron-sandbox", "workbench", "workbench.html");
+	let workbenchFolder = path.join(base, "electron-sandbox", "workbench");
+
+	// support Code Insiders
+	if (!fs.existsSync(workbenchFolder)) {
+		workbenchFolder = path.join(base, "electron-browser", "workbench");
+	}
+	if (!fs.existsSync(workbenchFolder)) {
+		vscode.window.showInformationMessage(msg.unableToLocateVsCodeInstallationPath);
+		return;
+	}
+
+	let htmlFile = path.join(workbenchFolder, "workbench.html");
 	// support Cursor IDE
 	if (!fs.existsSync(htmlFile)) {
-		htmlFile = path.join(base, "electron-sandbox", "workbench", "workbench-apc-extension.html");
+		htmlFile = path.join(workbenchFolder, "workbench-apc-extension.html");
 	}
 	if (!fs.existsSync(htmlFile)) {
-		htmlFile = path.join(base, "electron-sandbox", "workbench", "workbench.esm.html");
+		htmlFile = path.join(workbenchFolder, "workbench.esm.html");
 	}
+
 	if (!fs.existsSync(htmlFile)) {
 		vscode.window.showInformationMessage(msg.unableToLocateVsCodeInstallationPath);
+		return;
 	}
 	const BackupFilePath = uuid =>
-		path.join(base, "electron-sandbox", "workbench", `workbench.${uuid}.bak-custom-css`);
+		path.join(workbenchFolder, `workbench.${uuid}.bak-custom-css`);
 
 	function resolveVariable(key) {
 		const variables = {
