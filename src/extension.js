@@ -32,20 +32,17 @@ function activate(context) {
 		];
 
 		const htmlFileNameCandidates = [
+			"workbench-dev.html", // VSCode dev
 			"workbench.esm.html", // VSCode ESM
 			"workbench.html", // VSCode
 			"workbench-apc-extension.html" // Cursor
 		];
 
 		for (const workbenchDirCandidate of workbenchDirCandidates) {
-			if (!fs.existsSync(workbenchDirCandidate)) continue;
 			for (const htmlFileNameCandidate of htmlFileNameCandidates) {
-				const htmlFilePathCandidate = path.join(
-					workbenchDirCandidate,
-					htmlFileNameCandidate
-				);
-				if (fs.existsSync(htmlFilePathCandidate)) {
-					return [workbenchDirCandidate, htmlFilePathCandidate];
+				const htmlPathCandidate = path.join(workbenchDirCandidate, htmlFileNameCandidate);
+				if (fs.existsSync(htmlPathCandidate)) {
+					return [workbenchDirCandidate, htmlPathCandidate];
 				}
 			}
 		}
