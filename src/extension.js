@@ -8,40 +8,55 @@ const fetch = require("node-fetch");
 const Url = require("url");
 
 function activate(context) {
-	const appDir = require.main
-		? path.dirname(require.main.filename)
-		: globalThis._VSCODE_FILE_ROOT;
-	if (!appDir) {
+	const loc = locateWorkbench();
+	if (!loc) return;
+	const [workbenchDir, htmlPath] = loc;
+
+	function locateWorkbench() {
+		const appDir = require.main
+			? path.dirname(require.main.filename)
+			: globalThis._VSCODE_FILE_ROOT;
+		if (!appDir) {
+			vscode.window.showInformationMessage(msg.unableToLocateVsCodeInstallationPath);
+			return null;
+		}
+
+		const basePath = path.join(appDir, "vs", "code");
+		const workbenchDirCandidates = [
+			// v1.102+ path
+			path.join(basePath, "electron-browser", "workbench"),
+			path.join(basePath, "electron-browser"),
+			// old path
+			path.join(basePath, "electron-sandbox", "workbench"),
+			path.join(basePath, "electron-sandbox")
+		];
+
+		const htmlFileNameCandidates = [
+			"workbench.esm.html", // VSCode ESM
+			"workbench.html", // VSCode
+			"workbench-apc-extension.html" // Cursor
+		];
+
+		for (const workbenchDirCandidate of workbenchDirCandidates) {
+			if (!fs.existsSync(workbenchDirCandidate)) continue;
+			for (const htmlFileNameCandidate of htmlFileNameCandidates) {
+				const htmlFilePathCandidate = path.join(
+					workbenchDirCandidate,
+					htmlFileNameCandidate
+				);
+				if (fs.existsSync(htmlFilePathCandidate)) {
+					return [workbenchDirCandidate, htmlFilePathCandidate];
+				}
+			}
+		}
+
 		vscode.window.showInformationMessage(msg.unableToLocateVsCodeInstallationPath);
+		return null;
 	}
 
-	const base = path.join(appDir, "vs", "code");
-	let workbenchFolder = path.join(base, "electron-sandbox", "workbench");
-
-	// support Code Insiders
-	if (!fs.existsSync(workbenchFolder)) {
-		workbenchFolder = path.join(base, "electron-browser", "workbench");
+	function BackupFilePath(uuid) {
+		return path.join(workbenchDir, `workbench.${uuid}.bak-custom-css`);
 	}
-	if (!fs.existsSync(workbenchFolder)) {
-		vscode.window.showInformationMessage(msg.unableToLocateVsCodeInstallationPath);
-		return;
-	}
-
-	let htmlFile = path.join(workbenchFolder, "workbench.html");
-	// support Cursor IDE
-	if (!fs.existsSync(htmlFile)) {
-		htmlFile = path.join(workbenchFolder, "workbench-apc-extension.html");
-	}
-	if (!fs.existsSync(htmlFile)) {
-		htmlFile = path.join(workbenchFolder, "workbench.esm.html");
-	}
-
-	if (!fs.existsSync(htmlFile)) {
-		vscode.window.showInformationMessage(msg.unableToLocateVsCodeInstallationPath);
-		return;
-	}
-	const BackupFilePath = uuid =>
-		path.join(workbenchFolder, `workbench.${uuid}.bak-custom-css`);
 
 	function resolveVariable(key) {
 		const variables = {
@@ -101,7 +116,7 @@ function activate(context) {
 	}
 
 	async function uninstallImpl() {
-		const backupUuid = await getBackupUuid(htmlFile);
+		const backupUuid = await getBackupUuid(htmlPath);
 		if (!backupUuid) return;
 		const backupPath = BackupFilePath(backupUuid);
 		await restoreBackup(backupPath);
@@ -126,7 +141,7 @@ function activate(context) {
 
 	async function createBackup(uuidSession) {
 		try {
-			let html = await fs.promises.readFile(htmlFile, "utf-8");
+			let html = await fs.promises.readFile(htmlPath, "utf-8");
 			html = clearExistingPatches(html);
 			await fs.promises.writeFile(BackupFilePath(uuidSession), html, "utf-8");
 		} catch (e) {
@@ -138,8 +153,8 @@ function activate(context) {
 	async function restoreBackup(backupFilePath) {
 		try {
 			if (fs.existsSync(backupFilePath)) {
-				await fs.promises.unlink(htmlFile);
-				await fs.promises.copyFile(backupFilePath, htmlFile);
+				await fs.promises.unlink(htmlPath);
+				await fs.promises.copyFile(backupFilePath, htmlPath);
 			}
 		} catch (e) {
 			vscode.window.showInformationMessage(msg.admin);
@@ -148,7 +163,7 @@ function activate(context) {
 	}
 
 	async function deleteBackupFiles() {
-		const htmlDir = path.dirname(htmlFile);
+		const htmlDir = path.dirname(htmlPath);
 		const htmlDirItems = await fs.promises.readdir(htmlDir);
 		for (const item of htmlDirItems) {
 			if (item.endsWith(".bak-custom-css")) {
@@ -165,7 +180,7 @@ function activate(context) {
 			return vscode.window.showInformationMessage(msg.notConfigured);
 		}
 
-		let html = await fs.promises.readFile(htmlFile, "utf-8");
+		let html = await fs.promises.readFile(htmlPath, "utf-8");
 		html = clearExistingPatches(html);
 
 		const injectHTML = await patchHtml(config);
@@ -183,7 +198,7 @@ function activate(context) {
 				"<!-- !! VSCODE-CUSTOM-CSS-END !! -->\n</html>"
 		);
 		try {
-			await fs.promises.writeFile(htmlFile, html, "utf-8");
+			await fs.promises.writeFile(htmlPath, html, "utf-8");
 		} catch (e) {
 			vscode.window.showInformationMessage(msg.admin);
 			disabledRestart();
@@ -285,8 +300,8 @@ function activate(context) {
 	context.subscriptions.push(updateCustomCSS);
 
 	console.log("vscode-custom-css is active!");
-	console.log("Application directory", appDir);
-	console.log("Main HTML file", htmlFile);
+	console.log("Workbench directory", workbenchDir);
+	console.log("Main HTML file", htmlPath);
 }
 exports.activate = activate;
 
