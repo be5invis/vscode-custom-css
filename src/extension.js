@@ -59,6 +59,7 @@ function activate(context) {
 		const variables = {
 			cwd: () => process.cwd(),
 			userHome: () => os.homedir(),
+			workspaceFolder: () => vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || "",
 			execPath: () => process.env.VSCODE_EXEC_PATH ?? process.execPath,
 			pathSeparator: () => path.sep,
 			"/": () => path.sep
@@ -189,10 +190,10 @@ function activate(context) {
 		html = html.replace(
 			/(<\/html>)/,
 			`<!-- !! VSCODE-CUSTOM-CSS-SESSION-ID ${uuidSession} !! -->\n` +
-				"<!-- !! VSCODE-CUSTOM-CSS-START !! -->\n" +
-				indicatorJS +
-				injectHTML +
-				"<!-- !! VSCODE-CUSTOM-CSS-END !! -->\n</html>"
+			"<!-- !! VSCODE-CUSTOM-CSS-START !! -->\n" +
+			indicatorJS +
+			injectHTML +
+			"<!-- !! VSCODE-CUSTOM-CSS-END !! -->\n</html>"
 		);
 		try {
 			await fs.promises.writeFile(htmlPath, html, "utf-8");
@@ -303,5 +304,5 @@ function activate(context) {
 exports.activate = activate;
 
 // this method is called when your extension is deactivated
-function deactivate() {}
+function deactivate() { }
 exports.deactivate = deactivate;

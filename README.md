@@ -78,6 +78,7 @@ File URIs support VSCode variables like: `${userHome}`. It just replaces support
 
 - `${cwd}`
 - `${userHome}`
+- `${workspaceFolder}`
 - `${execPath}`
 - `${pathSeparator}`, `${/}`
 
