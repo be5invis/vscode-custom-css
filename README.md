@@ -82,6 +82,7 @@ File URIs support VSCode variables like: `${userHome}`. It just replaces support
 - `${execPath}`
 - `${pathSeparator}`, `${/}`
 
+`${workspaceFolder}` represents to the root directory of the workspace currently open in VSCode.
 It also supports env variables like `${env:ENV_VAR_NAME}` and you can specify a fallback value like `${env:ENV_VAR:defaultvalue}`
 
 
