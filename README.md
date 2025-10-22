@@ -7,8 +7,6 @@
 
 Custom CSS to your Visual Studio Code. Based on [robertohuertasm](https://github.com/robertohuertasm)’s [vscode-icons](https://github.com/robertohuertasm/vscode-icons).
 
-![screenshot](https://raw.githubusercontent.com/be5invis/vscode-custom-css/master/screenshot.png)
-
 ## Getting Started
 
 1. Install this extension.
