@@ -70,7 +70,7 @@
 	"dependencies": {
 		"file-url": "^3.0.0",
 		"node-fetch": "^2.0.0",
-		"uuid": "^8.3.2"
+		"uuid": "^14.0.0"
 	},
 	"extensionKind": [
 		"ui"
