@@ -187,14 +187,20 @@ function activate(context) {
 		let indicatorJS = "";
 		if (config.statusbar) indicatorJS = await getIndicatorJs();
 
+		// Inject into <head> so auxiliary windows (like New Chat Window) can clone the styles
 		html = html.replace(
-			/(<\/html>)/,
+			/(<\/head>)/,
 			`<!-- !! VSCODE-CUSTOM-CSS-SESSION-ID ${uuidSession} !! -->\n` +
-			"<!-- !! VSCODE-CUSTOM-CSS-START !! -->\n" +
-			indicatorJS +
-			injectHTML +
-			"<!-- !! VSCODE-CUSTOM-CSS-END !! -->\n</html>"
+				"<!-- !! VSCODE-CUSTOM-CSS-START !! -->\n" +
+				injectHTML +
+				"<!-- !! VSCODE-CUSTOM-CSS-END !! -->\n</head>"
 		);
+
+		// Inject indicator JS into body (this doesn't need to be cloned to auxiliary windows)
+		if (indicatorJS) {
+			html = html.replace(/(<\/body>)/, indicatorJS + "\n</body>");
+		}
+
 		try {
 			await fs.promises.writeFile(htmlPath, html, "utf-8");
 		} catch (e) {
@@ -210,6 +216,11 @@ function activate(context) {
 			""
 		);
 		html = html.replace(/<!-- !! VSCODE-CUSTOM-CSS-SESSION-ID [\w-]+ !! -->\n*/g, "");
+		// Clear indicator JS that was injected into body
+		html = html.replace(
+			/<script>\/\* eslint-env browser \*\/[\s\S]*?__CUSTOM_CSS_JS_INDICATOR_CLS[\s\S]*?<\/script>\n*/g,
+			""
+		);
 		return html;
 	}
 
@@ -304,5 +315,5 @@ function activate(context) {
 exports.activate = activate;
 
 // this method is called when your extension is deactivated
-function deactivate() { }
+function deactivate() {}
 exports.deactivate = deactivate;
